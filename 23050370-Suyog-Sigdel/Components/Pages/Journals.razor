@@ -1,8 +1,13 @@
 @page "/journals"
-@inject _23050370_Suyog_Sigdel.Data.AppDbContext Db
-@using Microsoft.EntityFrameworkCore;
+@inject _23050370_Suyog_Sigdel.Services.JournalService JournalService
 
-<h3>Journals</h3>
+<h3>My Journals</h3>
+
+<div class="journal-add">
+    <input type="text" @bind="newEntryContent" placeholder="Write your journal..." />
+    <button @onclick="AddEntry">Add Today</button>
+    <button @onclick="UpdateEntry">Update Today</button>
+</div>
 
 @if (journals == null)
 {
@@ -14,28 +19,87 @@ else if (!journals.Any())
 }
 else
 {
-    <ul>
+    <ul class="journal-list">
         @foreach (var entry in journals)
         {
-            <li>@entry.Date.ToString("yyyy-MM-dd") - @entry.Content</li>
+            <li>
+                <span class="journal-date">@entry.Date.ToString("yyyy-MM-dd")</span>
+                <span class="journal-content">@entry.Content</span>
+                <button class="delete-btn" @onclick="() => DeleteEntry(entry.Id)">Delete</button>
+            </li>
         }
     </ul>
 }
 
 @code {
     private List<_23050370_Suyog_Sigdel.Models.JournalEntry>? journals;
+    private string newEntryContent = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        try
+        await LoadJournals();
+    }
+
+    // ──────────────────────────────────────────────
+    //      LOAD JOURNALS
+    // ──────────────────────────────────────────────
+    private async Task LoadJournals()
+    {
+        journals = await JournalService.GetEntriesAsync();
+    }
+
+    // ──────────────────────────────────────────────
+    //      ADD ENTRY
+    // ──────────────────────────────────────────────
+    private async Task AddEntry()
+    {
+        if (!string.IsNullOrWhiteSpace(newEntryContent))
         {
-            journals = await Db.JournalEntries
-                .OrderByDescending(j => j.Date)
-                .ToListAsync();
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            var existingEntry = await JournalService.GetEntryByDateAsync(today);
+
+            if (existingEntry == null)
+            {
+                await JournalService.AddOrUpdateEntryAsync(newEntryContent);
+                newEntryContent = string.Empty;
+                await LoadJournals();
+            }
+            else
+            {
+                Console.WriteLine("Today's entry already exists. Use Update button.");
+            }
         }
-        catch (Exception ex)
+    }
+
+    // ──────────────────────────────────────────────
+    //      UPDATE ENTRY
+    // ──────────────────────────────────────────────
+    private async Task UpdateEntry()
+    {
+        if (!string.IsNullOrWhiteSpace(newEntryContent))
         {
-            Console.WriteLine("DB Error: " + ex.Message);
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            var existingEntry = await JournalService.GetEntryByDateAsync(today);
+
+            if (existingEntry != null)
+            {
+                await JournalService.AddOrUpdateEntryAsync(newEntryContent);
+                newEntryContent = string.Empty;
+                await LoadJournals();
+            }
+            else
+            {
+                Console.WriteLine("No entry found for today. Use Add button first.");
+            }
         }
+    }
+
+    // ──────────────────────────────────────────────
+    //      DELETE ENTRY
+    // ──────────────────────────────────────────────
+    private async Task DeleteEntry(int id)
+    {
+        await JournalService.DeleteEntryAsync(id);
+        await LoadJournals();
     }
 }
