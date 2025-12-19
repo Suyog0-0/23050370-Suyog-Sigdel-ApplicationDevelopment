@@ -1,26 +1,36 @@
 ﻿@using _23050370_Suyog_Sigdel.Services
 @inject ThemeService ThemeService
+@inject LockService LockService
+@inject NavigationManager Nav
 
 <div class="navbar @(ThemeService.IsDarkMode ? "dark" : "light")">
     <div class="navbar-content">
         <span class="navbar-brand">
             23050370-Suyog-Sigdel
         </span>
-        
-        <button class="theme-toggle" @onclick="ToggleTheme">
-            <i class="@(ThemeService.IsDarkMode ? "fas fa-moon" : "fas fa-sun")"></i>
-        </button>
+
+        <div class="navbar-actions">
+            <button class="icon-btn" @onclick="ToggleTheme" title="Toggle theme">
+                <i class="@(ThemeService.IsDarkMode ? "fas fa-moon" : "fas fa-sun")"></i>
+            </button>
+
+            <button class="icon-btn" @onclick="GoToLock" title="Lock app">
+                <i class="fas fa-lock"></i>
+            </button>
+        </div>
     </div>
 </div>
 
 @code {
     private async Task ToggleTheme()
     {
-        // Trigger animation
-        await InvokeAsync(StateHasChanged);
-        await Task.Delay(50); // Small delay for animation start
-        
-        // Change theme
+        await Task.Delay(50);
         ThemeService.ToggleTheme();
+    }
+
+    private void GoToLock()
+    {
+        LockService.Lock();
+        Nav.NavigateTo("/lock");
     }
 }

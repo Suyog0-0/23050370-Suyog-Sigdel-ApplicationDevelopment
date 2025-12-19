@@ -1,0 +1,41 @@
+@page "/lock"
+@using _23050370_Suyog_Sigdel.Services
+@inject LockService LockService
+@inject NavigationManager Nav
+
+<div class="lock-container">
+    <i class="fas fa-lock lock-icon"></i>
+
+    <h2>App Locked</h2>
+
+    <input type="password"
+           placeholder="Enter password"
+           @bind="password"
+           @bind:event="oninput" />
+
+    <button class="unlock-btn" @onclick="Unlock">
+        Unlock
+    </button>
+
+    @if (showError)
+    {
+        <p class="error">Incorrect password</p>
+    }
+</div>
+
+@code {
+    private string password = string.Empty;
+    private bool showError;
+
+    private void Unlock()
+    {
+        if (LockService.TryUnlock(password))
+        {
+            Nav.NavigateTo("/");
+        }
+        else
+        {
+            showError = true;
+        }
+    }
+}
