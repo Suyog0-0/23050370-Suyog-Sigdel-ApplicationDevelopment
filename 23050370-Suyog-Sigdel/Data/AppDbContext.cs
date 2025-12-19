@@ -8,11 +8,11 @@ public class AppDbContext : DbContext
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options) { }
 
-    public DbSet<JournalEntry> JournalEntries => Set<JournalEntry>();
+    public DbSet<JournalEntry_Model> JournalEntries => Set<JournalEntry_Model>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<JournalEntry>(entity =>
+        modelBuilder.Entity<JournalEntry_Model>(entity =>
         {
             entity.ToTable("journal_entries");
 

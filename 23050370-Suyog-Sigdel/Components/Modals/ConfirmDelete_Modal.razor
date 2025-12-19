@@ -1,0 +1,31 @@
+<div class="modal-backdrop" style="@(_show ? "display:flex" : "display:none")">
+    <div class="modal-content">
+        <p>@Message</p>
+        <div class="modal-actions">
+            <button class="confirm-btn" @onclick="Confirm">Yes</button>
+            <button class="cancel-btn" @onclick="Cancel">No</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Message { get; set; } = "Are you sure?";
+    [Parameter] public EventCallback<bool> OnClose { get; set; }
+
+    private bool _show = false;
+
+    public void Show() => _show = true;
+    public void Hide() => _show = false;
+
+    private async Task Confirm()
+    {
+        _show = false;
+        await OnClose.InvokeAsync(true);
+    }
+
+    private async Task Cancel()
+    {
+        _show = false;
+        await OnClose.InvokeAsync(false);
+    }
+}

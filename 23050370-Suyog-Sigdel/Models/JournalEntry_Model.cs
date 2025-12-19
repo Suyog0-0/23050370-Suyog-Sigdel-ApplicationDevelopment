@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace _23050370_Suyog_Sigdel.Models;
 
 [Table("journal_entries")]
-public class JournalEntry
+public class JournalEntry_Model
 {
     [Key]
     [Column("id")]
