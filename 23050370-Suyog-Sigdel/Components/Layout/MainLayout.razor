@@ -1,17 +1,19 @@
-﻿@inherits LayoutComponentBase
+﻿@using _23050370_Suyog_Sigdel.Services
+@inherits LayoutComponentBase
+@inject ThemeService ThemeService
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu/>
+<div class="main-layout @ThemeClass">
+    <Navbar />
+    <div class="content">
+        @Body
     </div>
-
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
-
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
 </div>
+
+@code {
+    private string ThemeClass => ThemeService.IsDark ? "dark" : "light";
+
+    protected override void OnInitialized()
+    {
+        ThemeService.OnThemeChanged += StateHasChanged;
+    }
+}

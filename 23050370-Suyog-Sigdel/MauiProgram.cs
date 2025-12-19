@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using _23050370_Suyog_Sigdel.Services;
+using Microsoft.Extensions.Logging;
 
 namespace _23050370_Suyog_Sigdel;
 
@@ -17,6 +18,7 @@ public static class MauiProgram
         builder.Services.AddBlazorWebViewDeveloperTools();
         builder.Logging.AddDebug();
 #endif
+        builder.Services.AddSingleton<ThemeService>();
 
         return builder.Build();
     }

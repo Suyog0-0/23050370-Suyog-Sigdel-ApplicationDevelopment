@@ -1,0 +1,47 @@
+﻿@using _23050370_Suyog_Sigdel.Services
+@inject ThemeService ThemeService
+
+<div class="navbar-top @((ThemeService.IsDarkMode ? "navbar-dark" : "navbar-light"))">
+    <div class="navbar-content">
+        <span class="navbar-brand @((ThemeService.IsDarkMode ? "text-light" : "text-dark"))">
+            23050370-Suyog-Sigdel
+        </span>
+        <button class="theme-toggle-btn"
+                @onclick="ThemeService.ToggleTheme"
+                title="Toggle light/dark theme">
+            <span class="@((ThemeService.IsDarkMode ? "bi bi-moon-fill" : "bi bi-sun-fill"))"></span>
+        </button>
+        <button class="theme-toggle-btn"
+                @onclick="ToggleThemeWithAnimation"
+                title="Toggle light/dark theme with animation">
+            <span class="@((ThemeService.IsDarkMode ? "bi bi-moon-fill" : "bi bi-sun-fill"))"></span>
+        </button>
+    </div>
+</div>
+
+
+@implements IDisposable
+
+@code {
+    private bool _isAnimating;
+
+    private async Task ToggleThemeWithAnimation()
+    {
+        if (_isAnimating)
+            return;
+
+        _isAnimating = true;
+        // Example animation logic: add a CSS class or trigger JS animation here
+        await Task.Delay(300); // Simulate animation duration
+        ThemeService.ToggleTheme();
+        _isAnimating = false;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        // Dispose logic if needed
+    }
+}
+
+

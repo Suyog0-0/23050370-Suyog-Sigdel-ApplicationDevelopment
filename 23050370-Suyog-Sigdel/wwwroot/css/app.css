@@ -3,6 +3,32 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+/* Light Theme */
+.light {
+    --bg-color: #ffffff;
+    --text-color: #212529;
+    --nav-bg: #f8f9fa;
+}
+
+/* Dark Theme */
+.dark {
+    --bg-color: #121212;
+    --text-color: #eaeaea;
+    --nav-bg: #1f1f1f;
+}
+
+/* Apply variables */
+body,
+.page {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.navbar {
+    background-color: var(--nav-bg) !important;
+}
+
+
 a, .btn-link {
     color: #006bb7;
 }
