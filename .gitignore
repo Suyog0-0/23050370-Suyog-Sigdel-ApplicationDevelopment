@@ -1,0 +1,16 @@
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+# Rider
+.idea/
+
+# .NET
+bin/
+obj/
+.vs/
+
+# User files
+*.user
+*.suo

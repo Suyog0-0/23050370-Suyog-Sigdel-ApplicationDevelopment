@@ -1,0 +1,8 @@
+﻿<maui:MauiWinUIApplication
+    x:Class="_23050370_Suyog_Sigdel.WinUI.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:maui="using:Microsoft.Maui"
+    xmlns:local="using:_23050370_Suyog_Sigdel.WinUI">
+
+</maui:MauiWinUIApplication>
