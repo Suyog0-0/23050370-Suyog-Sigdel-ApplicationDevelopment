@@ -23,19 +23,16 @@ public static class MauiProgram
             });
 
         // =====================================================
-        // DATABASE CONFIGURATION (PostgreSQL - Supabase)
+        // DATABASE CONFIGURATION (SQLite)
         // =====================================================
-        string connectionString =
-            "Host=db.lsyacsszkbmkgaoxdvgi.supabase.co;" +
-            "Database=postgres;" +
-            "Username=postgres;" +
-            "Password=20132005;" +
-            "SSL Mode=Require;Trust Server Certificate=true;Timeout=10;";
+        // SQLite database path inside app data folder
+        string dbPath = Path.Combine(FileSystem.AppDataDirectory, "journals.db");
+        Console.WriteLine($"SQLite DB Path: {dbPath}"); // For checking Db path
 
         builder.Services.AddDbContext<AppDbContext>(options =>
         {
-            options.UseNpgsql(connectionString);
-            options.LogTo(Console.WriteLine); // EF Core SQL & connection logs
+            options.UseSqlite($"Data Source={dbPath}");
+            options.LogTo(Console.WriteLine); // EF Core logs
         });
 
         // =====================================================
@@ -43,6 +40,7 @@ public static class MauiProgram
         // =====================================================
         builder.Services.AddScoped<JournalService>();
         builder.Services.AddSingleton<ThemeService>();
+        builder.Services.AddSingleton<SearchService>();
 
         // =====================================================
         // BLAZOR WEBVIEW
@@ -57,6 +55,16 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
 
-        return builder.Build();
+        // =====================================================
+        // ENSURE DATABASE IS CREATED
+        // =====================================================
+        var app = builder.Build();
+        using (var scope = app.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            db.Database.EnsureCreated(); // Creates SQLite DB if not exists
+        }
+
+        return app;
     }
 }

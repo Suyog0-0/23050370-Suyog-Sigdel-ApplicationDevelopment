@@ -1,0 +1,36 @@
+@namespace _23050370_Suyog_Sigdel.Components.Modals
+
+<div class="modal-backdrop" style="@(_show ? "display:flex" : "display:none")">
+    <div class="modal-content error-modal">
+        <div class="modal-header">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Error</span>
+        </div>
+        <div class="modal-body">
+            <p>@Message</p>
+        </div>
+        <div class="modal-actions">
+            <button class="ok-btn" @onclick="Close">OK</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] 
+    public string Message { get; set; } = "An error occurred.";
+    
+    [Parameter] 
+    public EventCallback OnClose { get; set; }
+
+    private bool _show = false;
+
+    public void Show() => _show = true;
+    
+    public void Hide() => _show = false;
+
+    private async Task Close()
+    {
+        _show = false;
+        await OnClose.InvokeAsync();
+    }
+}

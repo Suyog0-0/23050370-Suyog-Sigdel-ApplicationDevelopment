@@ -23,13 +23,18 @@ h1 {
 
 .journal-input {
     width: 100%;
-    min-height: 80px;
     padding: 0.8rem;
     margin-bottom: 0.8rem;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 1rem;
     resize: vertical;
+    font-family: inherit;
+}
+
+.journal-input:focus {
+    outline: none;
+    border-color: #3498db;
 }
 
 /* BUTTONS */
@@ -39,40 +44,65 @@ h1 {
 }
 
 button {
-    flex: 1;
     padding: 0.6rem;
     border: none;
     border-radius: 4px;
     color: white;
     font-weight: 500;
     cursor: pointer;
-    transition: opacity 0.2s;
+    transition: opacity 0.2s, transform 0.1s;
 }
 
 button:hover {
     opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(0);
 }
 
 .btn-add {
+    flex: 1;
     background: #3498db;
 }
 
 .btn-update {
+    flex: 1;
     background: #2ecc71;
 }
 
 .btn-delete {
     background: #e74c3c;
-    padding: 0.3rem 0.8rem;
-    font-size: 0.9rem;
-    margin-top: 0.5rem;
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    min-height: 30px;
+    padding: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+    line-height: 1;
 }
 
-/* STATUS / EMPTY STATES */
-.status, .empty-state {
+.btn-delete:hover {
+    background: #c0392b;
+    transform: scale(1.1);
+}
+
+/* STATUS / EMPTY STATES / SEARCH INFO */
+.status, .empty-state, .search-info {
     text-align: center;
-    padding: 2rem;
+    padding: 1.5rem;
     color: #7f8c8d;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.empty-state {
     font-style: italic;
 }
 
@@ -88,27 +118,52 @@ button:hover {
     border: 1px solid #e0e0e0;
     border-radius: 6px;
     padding: 1rem;
-    transition: transform 0.2s, border-color 0.2s;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
 
 .journal-card:hover {
-    transform: translateX(5px);
+    transform: translateX(3px);
     border-color: #3498db;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .entry-header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 0.5rem;
+    align-items: center;
+    margin-bottom: 0.7rem;
 }
 
 .date {
-    font-weight: bold;
+    font-weight: 600;
     color: #2c3e50;
+    font-size: 0.95rem;
 }
 
 .content {
-    margin: 0.5rem 0;
-    line-height: 1.5;
+    margin: 0;
+    line-height: 1.6;
     color: #34495e;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .journal-container {
+        margin: 1rem auto;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .button-row {
+        flex-direction: column;
+    }
+
+    .status, .empty-state, .search-info {
+        padding: 1rem;
+        font-size: 0.9rem;
+    }
 }

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace _23050370_Suyog_Sigdel.Models;
 
 [Table("journal_entries")]
-public class JournalEntry_Model
+public class JournalEntryModel
 {
     [Key]
     [Column("id")]
@@ -16,8 +16,8 @@ public class JournalEntry_Model
 
     [Column("date")]
     public DateTime Date { get; set; } = DateTime.UtcNow;
-
-    // Computed by DB trigger – EF needs a setter to read the value
+    
     [Column("entry_day")]
     public DateOnly EntryDay { get; set; } 
 }
+

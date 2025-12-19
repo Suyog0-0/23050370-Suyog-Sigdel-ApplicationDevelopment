@@ -1,28 +1,31 @@
+using _23050370_Suyog_Sigdel.Data;
 using _23050370_Suyog_Sigdel.Models;
 
 namespace _23050370_Suyog_Sigdel.Services;
 
 public partial class JournalService
 {
-    // 🔹 UPDATE ENTRY
+    // ──────────────────────────────────────────────
+    // 🔹 UPDATE ENTRY FOR TODAY
+    // ──────────────────────────────────────────────
     public async Task UpdateEntryAsync(string content)
     {
         try
         {
             var today = DateOnly.FromDateTime(DateTime.UtcNow);
-            var existingEntry = await GetEntryByDateAsync(today);
+            var existing = await GetEntryByDateAsync(today);
 
-            if (existingEntry != null)
+            if (existing == null)
             {
-                existingEntry.Content = content;
-                existingEntry.Date = DateTime.UtcNow;
-                _db.JournalEntries.Update(existingEntry);
-                await _db.SaveChangesAsync();
+                Console.WriteLine("No entry found for today. Use AddEntryAsync first.");
+                return;
             }
-            else
-            {
-                Console.WriteLine("No entry found for today. Use Add first.");
-            }
+
+            existing.Content = content;
+            existing.Date = DateTime.UtcNow;
+
+            _db.JournalEntries.Update(existing);
+            await _db.SaveChangesAsync();
         }
         catch (Exception ex)
         {

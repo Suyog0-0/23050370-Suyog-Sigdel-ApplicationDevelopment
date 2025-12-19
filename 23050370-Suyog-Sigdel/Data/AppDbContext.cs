@@ -1,41 +1,26 @@
 using Microsoft.EntityFrameworkCore;
 using _23050370_Suyog_Sigdel.Models;
 
-namespace _23050370_Suyog_Sigdel.Data;
-
-public class AppDbContext : DbContext
+namespace _23050370_Suyog_Sigdel.Data
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options)
-        : base(options) { }
-
-    public DbSet<JournalEntry_Model> JournalEntries => Set<JournalEntry_Model>();
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    public class AppDbContext : DbContext
     {
-        modelBuilder.Entity<JournalEntry_Model>(entity =>
+        // Using correct model class
+        public DbSet<JournalEntryModel> JournalEntries { get; set; } = null!;
+
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            entity.ToTable("journal_entries");
-
-            entity.HasKey(e => e.Id);
-
-            entity.Property(e => e.Id)
-                .HasColumnName("id");
-
-            entity.Property(e => e.Content)
-                .HasColumnName("content")
-                .IsRequired();
-
-            entity.Property(e => e.Date)
-                .HasColumnName("date")
-                .IsRequired();
-
-            // DB-generated column (trigger)
-            entity.Property(e => e.EntryDay)
-                .HasColumnName("entry_day")
-                .ValueGeneratedOnAddOrUpdate()
-                .Metadata.SetAfterSaveBehavior(
-                    Microsoft.EntityFrameworkCore.Metadata.PropertySaveBehavior.Ignore
+            // Convert DateOnly to string for SQLite
+            modelBuilder.Entity<JournalEntryModel>()
+                .Property<DateOnly>(j => j.EntryDay)
+                .HasConversion<string>(
+                    v => v.ToString(),       // store as string
+                    v => DateOnly.Parse(v)   // convert back to DateOnly
                 );
-        });
+
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

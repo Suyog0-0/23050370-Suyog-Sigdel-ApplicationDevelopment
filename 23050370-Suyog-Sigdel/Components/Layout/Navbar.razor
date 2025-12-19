@@ -1,5 +1,7 @@
 ﻿@using _23050370_Suyog_Sigdel.Services
 @inject ThemeService ThemeService
+@inject SearchService SearchService
+@inject NavigationManager Navigation
 @using Microsoft.AspNetCore.Components.Routing
 
 <div class="navbar @(ThemeService.IsDarkMode ? "dark" : "light")">
@@ -8,7 +10,25 @@
             23050370-Suyog-Sigdel
         </span>
         
+        <div class="search-container">
+            <input 
+                type="text" 
+                class="search-input" 
+                placeholder="Search journals..." 
+                @bind="searchText"
+                @bind:event="oninput"
+                @onkeydown="HandleKeyPress" />
+            @if (!string.IsNullOrEmpty(searchText))
+            {
+                <button class="clear-search" @onclick="ClearSearch">×</button>
+            }
+        </div>
+        
         <div class="nav-links">
+            <NavLink href="/" class="nav-link" Match="NavLinkMatch.All" activeclass="active">
+                Home
+            </NavLink>
+            
             <NavLink href="/journals" class="nav-link" activeclass="active">
                 Journals
             </NavLink>
@@ -21,13 +41,37 @@
 </div>
 
 @code {
+    private string searchText = string.Empty;
+
+    private string _searchText
+    {
+        get => searchText;
+        set
+        {
+            searchText = value;
+            SearchService.SetSearchTerm(searchText);
+        }
+    }
+
     private async Task ToggleTheme()
     {
-        // Trigger animation
         await InvokeAsync(StateHasChanged);
-        await Task.Delay(50); // Small delay for animation start
-        
-        // Change theme
+        await Task.Delay(50);
         ThemeService.ToggleTheme();
+    }
+
+    private void ClearSearch()
+    {
+        searchText = string.Empty;
+        SearchService.ClearSearch();
+    }
+
+    private void HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(searchText))
+        {
+            SearchService.SetSearchTerm(searchText);
+            Navigation.NavigateTo("/journals");
+        }
     }
 }
