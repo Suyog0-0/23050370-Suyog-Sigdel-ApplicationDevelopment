@@ -1,0 +1,41 @@
+@page "/journals"
+@inject _23050370_Suyog_Sigdel.Data.AppDbContext Db
+@using Microsoft.EntityFrameworkCore;
+
+<h3>Journals</h3>
+
+@if (journals == null)
+{
+    <p>Loading journals...</p>
+}
+else if (!journals.Any())
+{
+    <p>No journal entries found.</p>
+}
+else
+{
+    <ul>
+        @foreach (var entry in journals)
+        {
+            <li>@entry.Date.ToString("yyyy-MM-dd") - @entry.Content</li>
+        }
+    </ul>
+}
+
+@code {
+    private List<_23050370_Suyog_Sigdel.Models.JournalEntry>? journals;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            journals = await Db.JournalEntries
+                .OrderByDescending(j => j.Date)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("DB Error: " + ex.Message);
+        }
+    }
+}

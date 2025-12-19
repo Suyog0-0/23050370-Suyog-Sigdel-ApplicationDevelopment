@@ -6,7 +6,6 @@
     padding: 1rem 2rem;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     transition: background-color 0.3s ease;
 }
 
@@ -47,6 +46,55 @@
 
 .navbar.dark .navbar-brand {
     color: white;
+}
+
+/* Navigation links container */
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+/* NavLink styling */
+.nav-link {
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+/* Light theme NavLink */
+.navbar.light .nav-link {
+    color: #555;
+}
+
+.navbar.light .nav-link:hover {
+    color: #007bff;
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+.navbar.light .nav-link.active {
+    color: #007bff;
+    background-color: rgba(0, 123, 255, 0.15);
+    font-weight: 600;
+}
+
+/* Dark theme NavLink */
+.navbar.dark .nav-link {
+    color: #ddd;
+}
+
+.navbar.dark .nav-link:hover {
+    color: #4da6ff;
+    background-color: rgba(77, 166, 255, 0.1);
+}
+
+.navbar.dark .nav-link.active {
+    color: #4da6ff;
+    background-color: rgba(77, 166, 255, 0.15);
+    font-weight: 600;
 }
 
 /* Theme toggle button */
@@ -109,7 +157,8 @@
 }
 
 /* Focus state for accessibility */
-.theme-toggle:focus {
+.theme-toggle:focus,
+.nav-link:focus {
     outline: none;
     box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.3);
 }
@@ -122,6 +171,15 @@
 
     .navbar-brand {
         font-size: 1.1rem;
+    }
+
+    .nav-links {
+        gap: 1rem;
+    }
+
+    .nav-link {
+        font-size: 1rem;
+        padding: 0.4rem 0.8rem;
     }
 
     .theme-toggle {
@@ -137,5 +195,14 @@
 @media (max-width: 480px) {
     .navbar-brand {
         font-size: 1rem;
+    }
+
+    .nav-links {
+        gap: 0.8rem;
+    }
+
+    .nav-link {
+        font-size: 0.9rem;
+        padding: 0.3rem 0.6rem;
     }
 }
