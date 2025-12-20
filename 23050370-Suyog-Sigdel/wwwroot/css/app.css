@@ -73,6 +73,17 @@ a:hover,
     text-decoration: underline;
 }
 
+/* Added for overriding the navbar links */
+.navbar-link,
+.navbar-link:hover,
+.navbar-link:focus,
+.navbar-link:active,
+.navbar-link:visited {
+    text-decoration: none !important;
+    opacity: 1 !important;
+    /*color: inherit !important;  */
+}
+
 /* ================================
    Buttons
    ================================ */
@@ -121,20 +132,19 @@ a:hover,
    ================================ */
 
 .blazor-error-boundary {
-    background-color: #b32121; /* Red background */
-    color: #fff;               /* White text */
-    padding: 1rem 1rem 1rem 3rem; /* Space for icon */
+    background-color: #b32121;
+    color: #fff;
+    padding: 1rem 1rem 1rem 3rem;
     border-radius: 5px;
     position: relative;
     margin: 1rem 0;
     font-size: 0.95rem;
 }
 
-/* Error icon */
 .blazor-error-boundary::before {
-    content: "\f071"; /* fa-triangle-exclamation */
+    content: "\f071";
     font-family: "sans-serif";
-    font-weight: 900; 
+    font-weight: 900;
     position: absolute;
     left: 1rem;
     top: 50%;
@@ -142,8 +152,6 @@ a:hover,
     font-size: 1.5rem;
 }
 
-
-/* Mobile adjustment */
 @media (max-width: 480px) {
     .blazor-error-boundary {
         padding-left: 2.5rem;

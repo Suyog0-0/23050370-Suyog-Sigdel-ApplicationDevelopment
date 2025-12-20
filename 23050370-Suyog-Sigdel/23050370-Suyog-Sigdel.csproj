@@ -22,7 +22,7 @@
         <Nullable>enable</Nullable>
 
         <!-- Display name -->
-        <ApplicationTitle>23050370-Suyog-Sigdel</ApplicationTitle>
+        <ApplicationTitle>Journaling App</ApplicationTitle>
 
         <!-- App Identifier -->
         <ApplicationId>com.companyname.23050370suyogsigdel</ApplicationId>
