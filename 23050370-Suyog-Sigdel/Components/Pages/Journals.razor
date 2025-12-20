@@ -2,18 +2,14 @@
 @inject _23050370_Suyog_Sigdel.Services.JournalService JournalService
 @inject _23050370_Suyog_Sigdel.Services.SearchService SearchService
 @using _23050370_Suyog_Sigdel.Components.Modals
+@using _23050370_Suyog_Sigdel.Components
 @implements IDisposable
 
 <div class="journal-container">
     <h1>My Journals</h1>
 
     <div class="input-section">
-        <textarea 
-            class="journal-input" 
-            @bind="newEntryContent" 
-            placeholder="Write your thoughts here..." 
-            rows="4">
-        </textarea>
+        <RichTextEditor @ref="richTextEditor" />
         <div class="button-row">
             <button class="btn-add" @onclick="AddEntry">Add Today</button>
             <button class="btn-update" @onclick="UpdateEntry">Update Today</button>
@@ -56,7 +52,9 @@
                             ×
                         </button>
                     </div>
-                    <div class="content">@entry.Content</div>
+                    <div class="content">
+                        @((MarkupString)entry.Content)
+                    </div>
                 </div>
             }
         </div>
@@ -67,8 +65,8 @@
 </div>
 
 @code {
+    private RichTextEditor? richTextEditor;
     private List<_23050370_Suyog_Sigdel.Models.JournalEntryModel>? journals;
-    private string newEntryContent = string.Empty;
     private ConfirmDeleteModal? deleteModal;
     private ErrorModal? errorModal;
     private int? deleteEntryId;
@@ -106,7 +104,9 @@
 
     private async Task AddEntry()
     {
-        if (string.IsNullOrWhiteSpace(newEntryContent)) 
+        var htmlContent = await richTextEditor!.GetHTML();
+        
+        if (string.IsNullOrWhiteSpace(htmlContent) || htmlContent == "<br>" || htmlContent == "<div><br></div>") 
         {
             errorMessage = "Please write something before adding an entry.";
             errorModal?.Show();
@@ -123,22 +123,24 @@
             return;
         }
 
-        await JournalService.AddEntryAsync(newEntryContent);
-        newEntryContent = string.Empty;
+        await JournalService.AddEntryAsync(htmlContent);
+        await richTextEditor.Clear();
         await LoadJournals();
     }
 
     private async Task UpdateEntry()
     {
-        if (string.IsNullOrWhiteSpace(newEntryContent))
+        var htmlContent = await richTextEditor!.GetHTML();
+        
+        if (string.IsNullOrWhiteSpace(htmlContent) || htmlContent == "<br>" || htmlContent == "<div><br></div>")
         {
             errorMessage = "Please write something before updating an entry.";
             errorModal?.Show();
             return;
         }
 
-        await JournalService.UpdateEntryAsync(newEntryContent);
-        newEntryContent = string.Empty;
+        await JournalService.UpdateEntryAsync(htmlContent);
+        await richTextEditor.Clear();
         await LoadJournals();
     }
 

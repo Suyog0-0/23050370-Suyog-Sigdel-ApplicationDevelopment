@@ -12,9 +12,9 @@ public static class MauiProgram
     {
         var builder = MauiApp.CreateBuilder();
 
-        // =====================================================
+        // ----------------------------------------------------
         // MAUI APP CONFIGURATION
-        // =====================================================
+        // ----------------------------------------------------
         builder
             .UseMauiApp<App>()
             .ConfigureFonts(fonts =>
@@ -22,9 +22,9 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
             });
 
-        // =====================================================
+        // ----------------------------------------------------
         // DATABASE CONFIGURATION (SQLite)
-        // =====================================================
+        // ----------------------------------------------------
         // SQLite database path inside app data folder
         string dbPath = Path.Combine(FileSystem.AppDataDirectory, "journals.db");
         Console.WriteLine($"SQLite DB Path: {dbPath}"); // For checking Db path
@@ -35,29 +35,29 @@ public static class MauiProgram
             options.LogTo(Console.WriteLine); // EF Core logs
         });
 
-        // =====================================================
+        // ----------------------------------------------------
         // DEPENDENCY INJECTION (SERVICES)
-        // =====================================================
+        // ----------------------------------------------------
         builder.Services.AddScoped<JournalService>();
         builder.Services.AddSingleton<ThemeService>();
         builder.Services.AddSingleton<SearchService>();
 
-        // =====================================================
+        // ----------------------------------------------------
         // BLAZOR WEBVIEW
-        // =====================================================
+        // ----------------------------------------------------
         builder.Services.AddMauiBlazorWebView();
 
 #if DEBUG
-        // =====================================================
+        // ----------------------------------------------------
         // DEBUG & DEVELOPER TOOLS
-        // =====================================================
+        // ----------------------------------------------------
         builder.Services.AddBlazorWebViewDeveloperTools();
         builder.Logging.AddDebug();
 #endif
 
-        // =====================================================
+        // ----------------------------------------------------
         // ENSURE DATABASE IS CREATED
-        // =====================================================
+        // ----------------------------------------------------
         var app = builder.Build();
         using (var scope = app.Services.CreateScope())
         {

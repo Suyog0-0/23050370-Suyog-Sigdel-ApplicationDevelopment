@@ -1,6 +1,6 @@
-﻿/* ================================
+﻿/* ----------------
    Base styles
-   ================================ */
+   ---------------- */
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -8,9 +8,9 @@ html, body {
     padding: 0;
 }
 
-/* ================================
+/* ----------------
    Theme variables
-   ================================ */
+   ---------------- */
 
 /* Light Theme */
 .light {
@@ -26,9 +26,9 @@ html, body {
     --nav-bg: #1f1f1f;
 }
 
-/* ================================
-   Root layout (CRITICAL)
-   ================================ */
+/* ----------------
+   Root layout (Important)
+   ---------------- */
 
 .main-layout {
     background-color: var(--bg-color);
@@ -38,9 +38,9 @@ html, body {
     flex-direction: column;
 }
 
-/* ================================
+/* ----------------
    Content area
-   ================================ */
+   ---------------- */
 
 .content {
     padding-top: 1.1rem;
@@ -48,9 +48,9 @@ html, body {
     color: inherit;
 }
 
-/* ================================
+/* ----------------
    Typography & links
-   ================================ */
+   ---------------- */
 
 h1, h2, h3, h4, h5, h6 {
     color: inherit;
@@ -84,9 +84,9 @@ a:hover,
     /*color: inherit !important;  */
 }
 
-/* ================================
+/* ----------------
    Buttons
-   ================================ */
+   ---------------- */
 
 .btn-primary {
     color: #ffffff;
@@ -103,17 +103,17 @@ a:hover,
     0 0 0 0.25rem #258cfb;
 }
 
-/* ================================
+/* ----------------
    Navbar (global fallback)
-   ================================ */
+   ---------------- */
 
 .navbar {
     background-color: var(--nav-bg) !important;
 }
 
-/* ================================
+/* ----------------
    Validation
-   ================================ */
+   ---------------- */
 
 .valid.modified:not([type=checkbox]) {
     outline: 1px solid #26b050;
@@ -127,9 +127,9 @@ a:hover,
     color: #e50000;
 }
 
-/* ================================
-   Blazor error UI (simplified student-friendly)
-   ================================ */
+/* ----------------
+   Blazor error UI 
+   ---------------- */
 
 .blazor-error-boundary {
     background-color: #b32121;
@@ -163,9 +163,9 @@ a:hover,
     }
 }
 
-/* ================================
+/* ----------------
    Safe area (iOS / macOS)
-   ================================ */
+   ---------------- */
 
 .status-bar-safe-area {
     display: none;

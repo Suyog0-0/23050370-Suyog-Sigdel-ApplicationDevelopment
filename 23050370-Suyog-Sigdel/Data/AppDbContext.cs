@@ -5,14 +5,14 @@ namespace _23050370_Suyog_Sigdel.Data
 {
     public class AppDbContext : DbContext
     {
-        // Using correct model class
+        // Model class
         public DbSet<JournalEntryModel> JournalEntries { get; set; } = null!;
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Convert DateOnly to string for SQLite
+            // Convert DateOnly to string (SQLite)
             modelBuilder.Entity<JournalEntryModel>()
                 .Property<DateOnly>(j => j.EntryDay)
                 .HasConversion<string>(

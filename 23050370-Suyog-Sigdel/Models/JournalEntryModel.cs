@@ -21,3 +21,4 @@ public class JournalEntryModel
     public DateOnly EntryDay { get; set; } 
 }
 
+

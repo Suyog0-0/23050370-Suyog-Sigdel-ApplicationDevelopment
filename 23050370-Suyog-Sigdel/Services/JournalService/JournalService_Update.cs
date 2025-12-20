@@ -6,7 +6,7 @@ namespace _23050370_Suyog_Sigdel.Services;
 public partial class JournalService
 {
     // ──────────────────────────────────────────────
-    // 🔹 UPDATE ENTRY FOR TODAY
+    // UPDATE ENTRY FOR TODAY
     // ──────────────────────────────────────────────
     public async Task UpdateEntryAsync(string content)
     {

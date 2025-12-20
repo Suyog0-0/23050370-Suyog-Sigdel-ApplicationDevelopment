@@ -6,7 +6,7 @@ public class ThemeService
 {
     public bool IsDark { get; private set; }
 
-    public bool IsDarkMode => IsDark; // for Razor pages
+    public bool IsDarkMode => IsDark; // Razor pages
 
     public event Action? OnThemeChanged;
 

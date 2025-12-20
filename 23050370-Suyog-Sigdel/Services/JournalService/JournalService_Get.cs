@@ -7,7 +7,7 @@ namespace _23050370_Suyog_Sigdel.Services;
 public partial class JournalService
 {
     // ──────────────────────────────────────────────
-    // 🔹 GET ALL JOURNAL ENTRIES
+    // GET ALL JOURNAL ENTRIES
     // ──────────────────────────────────────────────
     public async Task<List<JournalEntryModel>> GetEntriesAsync()
     {
@@ -25,7 +25,7 @@ public partial class JournalService
     }
 
     // ──────────────────────────────────────────────
-    // 🔹 GET ENTRY BY DATE
+    // GET ENTRY BY DATE
     // ──────────────────────────────────────────────
     public async Task<JournalEntryModel?> GetEntryByDateAsync(DateOnly date)
     {

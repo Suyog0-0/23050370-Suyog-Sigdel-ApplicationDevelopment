@@ -6,7 +6,7 @@ namespace _23050370_Suyog_Sigdel.Services;
 public partial class JournalService
 {
     // ──────────────────────────────────────────────
-    // 🔹 ADD NEW ENTRY (IF NOT EXIST)
+    // ADD NEW ENTRY (IF NOT EXIST)
     // ──────────────────────────────────────────────
     public async Task AddEntryAsync(string content)
     {

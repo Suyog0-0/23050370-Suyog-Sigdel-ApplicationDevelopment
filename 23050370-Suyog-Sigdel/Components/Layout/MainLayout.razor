@@ -27,7 +27,7 @@
             Console.WriteLine($"SQLite DB Path: {dbPath}");
 
             // Open a test connection
-            using var connection = new SqliteConnection($"Data Source={dbPath}");
+            using var connection = new SqliteConnection($"Data Source={dbPath}"); //For finding Db Path for SQLLite Nightly (GUI)
             await connection.OpenAsync();
             Console.WriteLine("✅ Connected to SQLite successfully!");
             await connection.CloseAsync();
