@@ -15,7 +15,14 @@
     </div>
 
     <div class="input-section">
+        <input 
+            type="text" 
+            class="title-input" 
+            placeholder="Enter title (optional)..." 
+            @bind="titleText" />
+        
         <RichTextEditor @ref="richTextEditor" />
+        
         <div class="button-row">
             @if (editingEntryId == null)
             {
@@ -83,6 +90,7 @@
     private int? deleteEntryId;
     private int? editingEntryId;
     private string errorMessage = string.Empty;
+    private string titleText = string.Empty;
 
     // Pagination variables
     private int pageSize = 5;
@@ -99,6 +107,7 @@
 
             var searchTerm = SearchService.SearchTerm.ToLower();
             return journals.Where(j =>
+                j.Title.ToLower().Contains(searchTerm) ||
                 j.Content.ToLower().Contains(searchTerm) ||
                 j.EntryDay.ToString().Contains(searchTerm)
             ).ToList();
@@ -150,6 +159,7 @@
     private async Task StartEdit(_23050370_Suyog_Sigdel.Models.JournalEntryModel entry)
     {
         editingEntryId = entry.Id;
+        titleText = entry.Title;
         await richTextEditor!.LoadHTMLContent(entry.Content);
         StateHasChanged();
     }
@@ -170,12 +180,14 @@
         var entry = journals?.FirstOrDefault(j => j.Id == editingEntryId.Value);
         if (entry != null)
         {
+            entry.Title = titleText;
             entry.Content = htmlContent;
             entry.Date = DateTime.UtcNow;
-            await JournalService.UpdateEntryByIdAsync(editingEntryId.Value, htmlContent);
+            await JournalService.UpdateEntryByIdAsync(editingEntryId.Value, titleText, htmlContent);
         }
 
         await richTextEditor.Clear();
+        titleText = string.Empty;
         editingEntryId = null;
         await LoadJournals();
     }
@@ -183,6 +195,7 @@
     private async Task CancelEdit()
     {
         editingEntryId = null;
+        titleText = string.Empty;
         await richTextEditor!.Clear();
         StateHasChanged();
     }
@@ -208,8 +221,9 @@
             return;
         }
 
-        await JournalService.AddEntryAsync(htmlContent);
+        await JournalService.AddEntryAsync(titleText, htmlContent);
         await richTextEditor.Clear();
+        titleText = string.Empty;
         await LoadJournals();
     }
 
@@ -224,8 +238,9 @@
             return;
         }
 
-        await JournalService.UpdateEntryAsync(htmlContent);
+        await JournalService.UpdateEntryAsync(titleText, htmlContent);
         await richTextEditor.Clear();
+        titleText = string.Empty;
         await LoadJournals();
     }
 

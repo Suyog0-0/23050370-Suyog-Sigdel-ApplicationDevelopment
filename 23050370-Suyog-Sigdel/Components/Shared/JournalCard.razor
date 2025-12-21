@@ -2,7 +2,13 @@
 
 <div class="journal-card @(IsEditing ? "editing" : "")">
     <div class="entry-header">
-        <span class="date">@Entry.EntryDay.ToDateTime(TimeOnly.MinValue).ToString("dddd, MMMM dd, yyyy")</span>
+        <div class="header-info">
+            @if (!string.IsNullOrWhiteSpace(Entry.Title))
+            {
+                <h3 class="entry-title">@Entry.Title</h3>
+            }
+            <span class="date">@Entry.EntryDay.ToDateTime(TimeOnly.MinValue).ToString("dddd, MMMM dd, yyyy")</span>
+        </div>
         <div class="entry-actions">
             <button class="btn-edit" @onclick="OnEdit" title="Edit">
                 <i class="fas fa-edit"></i>
@@ -30,4 +36,3 @@
     [Parameter]
     public EventCallback OnDelete { get; set; }
 }
-

@@ -11,6 +11,9 @@ public class JournalEntryModel
     [Column("id")]
     public int Id { get; set; }
 
+    [Column("title")]
+    public string Title { get; set; } = string.Empty;
+
     [Column("content")]
     public string Content { get; set; } = string.Empty;
 
@@ -20,5 +23,3 @@ public class JournalEntryModel
     [Column("entry_day")]
     public DateOnly EntryDay { get; set; } 
 }
-
-

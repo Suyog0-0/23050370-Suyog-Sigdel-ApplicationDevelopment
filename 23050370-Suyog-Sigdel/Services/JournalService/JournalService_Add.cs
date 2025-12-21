@@ -8,7 +8,7 @@ public partial class JournalService
     // ──────────────────────────────────────────────
     // ADD NEW ENTRY (IF NOT EXIST)
     // ──────────────────────────────────────────────
-    public async Task AddEntryAsync(string content)
+    public async Task AddEntryAsync(string title, string content)
     {
         try
         {
@@ -24,6 +24,7 @@ public partial class JournalService
             {
                 Date = DateTime.UtcNow,
                 EntryDay = today,
+                Title = title,
                 Content = content
             };
 

@@ -7,13 +7,14 @@ public partial class JournalService
     // ──────────────────────────────────────────────
     // UPDATE ENTRY BY ID
     // ──────────────────────────────────────────────
-    public async Task UpdateEntryByIdAsync(int id, string content)
+    public async Task UpdateEntryByIdAsync(int id, string title, string content)
     {
         try
         {
             var entry = await _db.JournalEntries.FindAsync(id);
             if (entry != null)
             {
+                entry.Title = title;
                 entry.Content = content;
                 entry.Date = DateTime.UtcNow;
                 _db.JournalEntries.Update(entry);

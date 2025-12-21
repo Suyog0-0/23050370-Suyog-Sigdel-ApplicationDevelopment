@@ -8,7 +8,7 @@ public partial class JournalService
     // ──────────────────────────────────────────────
     // UPDATE ENTRY FOR TODAY
     // ──────────────────────────────────────────────
-    public async Task UpdateEntryAsync(string content)
+    public async Task UpdateEntryAsync(string title, string content)
     {
         try
         {
@@ -21,6 +21,7 @@ public partial class JournalService
                 return;
             }
 
+            existing.Title = title;
             existing.Content = content;
             existing.Date = DateTime.UtcNow;
 
