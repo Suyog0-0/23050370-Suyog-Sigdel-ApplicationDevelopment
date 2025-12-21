@@ -6,79 +6,67 @@
 @implements IDisposable
 
 <div class="journal-container">
-    <h1>My Journals</h1>
+<h1>My Journals</h1>
 
-    <div class="input-section">
-        <RichTextEditor @ref="richTextEditor" />
-        <div class="button-row">
-            @if (editingEntryId == null)
-            {
-                <button class="btn-add" @onclick="AddEntry">Add Today</button>
-                <button class="btn-update" @onclick="UpdateEntry">Update Today</button>
-            }
-            else
-            {
-                <button class="btn-save" @onclick="SaveEdit">Save Changes</button>
-                <button class="btn-cancel" @onclick="CancelEdit">Cancel</button>
-            }
-        </div>
+<div class="input-section">
+<RichTextEditor @ref="richTextEditor" />
+<div class="button-row">
+@if (editingEntryId == null)
+{
+<button class="btn-add" @onclick="AddEntry">Add Today</button>
+<button class="btn-update" @onclick="UpdateEntry">Update Today</button>
+}
+else
+{
+<button class="btn-save" @onclick="SaveEdit">Save Changes</button>
+<button class="btn-cancel" @onclick="CancelEdit">Cancel</button>
+}
+</div>
+</div>
+
+@if (journals == null)
+{
+<div class="status">Loading journals...</div>
+}
+else if (!FilteredJournals.Any())
+{
+<div class="empty-state">
+@if (!string.IsNullOrEmpty(SearchService.SearchTerm))
+{
+<text>No journals found matching "@SearchService.SearchTerm"</text>
+}
+else
+{
+<text>No journal entries found.</text>
+}
+</div>
+}
+else
+{
+    @if (!string.IsNullOrEmpty(SearchService.SearchTerm))
+    {
+    <div class="search-info">
+    @FilteredJournals.Count @(FilteredJournals.Count == 1 ? "entry" : "entries") found for "@SearchService.SearchTerm"
     </div>
-
-    @if (journals == null)
-    {
-        <div class="status">Loading journals...</div>
-    }
-    else if (!FilteredJournals.Any())
-    {
-        <div class="empty-state">
-            @if (!string.IsNullOrEmpty(SearchService.SearchTerm))
-            {
-                <text>No journals found matching "@SearchService.SearchTerm"</text>
-            }
-            else
-            {
-                <text>No journal entries found.</text>
-            }
-        </div>
-    }
-    else
-    {
-        @if (!string.IsNullOrEmpty(SearchService.SearchTerm))
-        {
-            <div class="search-info">
-                @FilteredJournals.Count @(FilteredJournals.Count == 1 ? "entry" : "entries") found for "@SearchService.SearchTerm"
-            </div>
-        }
-
-        <div class="entries-container">
-            @foreach (var entry in PaginatedJournals)
-            {
-                <div class="journal-card @(editingEntryId == entry.Id ? "editing" : "")">
-                    <div class="entry-header">
-                        <span class="date">@entry.EntryDay.ToDateTime(TimeOnly.MinValue).ToString("dddd, MMMM dd, yyyy")</span>
-                        <div class="entry-actions">
-                            <button class="btn-edit" @onclick="() => StartEdit(entry)" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-delete" @onclick="() => ShowDeleteModal(entry.Id)" title="Delete">
-                                ×
-                            </button>
-                        </div>
-                    </div>
-                    <div class="content">
-                        @((MarkupString)entry.Content)
-                    </div>
-                </div>
-            }
-        </div>
-
-        <Pagination CurrentPage="@currentPage" 
-                    TotalPages="@TotalPages" 
-                    OnPageChanged="@GoToPage" />
     }
 
-    <ConfirmDeleteModal @ref="deleteModal" OnClose="OnDeleteModalClose" />
-    <ErrorModal @ref="errorModal" Message="@errorMessage" OnClose="OnErrorModalClose" />
+<div class="entries-container">
+@foreach (var entry in PaginatedJournals)
+{
+<JournalCard Entry="@entry"
+IsEditing="@(editingEntryId == entry.Id)"
+OnEdit="@(() => StartEdit(entry))"
+OnDelete="@(() => ShowDeleteModal(entry.Id))" />
+}
+</div>
+
+<Pagination CurrentPage="@currentPage"
+TotalPages="@TotalPages"
+OnPageChanged="@GoToPage" />
+}
+
+<ConfirmDeleteModal @ref="deleteModal" OnClose="OnDeleteModalClose" />
+<ErrorModal @ref="errorModal" Message="@errorMessage" OnClose="OnErrorModalClose" />
 </div>
 
 @code {
@@ -90,169 +78,170 @@
     private int? editingEntryId;
     private string errorMessage = string.Empty;
 
-    // Pagination variables
-    private int pageSize = 5;
+// Pagination variables
+private int pageSize = 5;
     private int currentPage = 1;
 
     private List<_23050370_Suyog_Sigdel.Models.JournalEntryModel> FilteredJournals
+{
+    get
     {
-        get
-        {
-            if (journals == null) return new List<_23050370_Suyog_Sigdel.Models.JournalEntryModel>();
+        if (journals == null) return new List<_23050370_Suyog_Sigdel.Models.JournalEntryModel>();
 
-            if (string.IsNullOrWhiteSpace(SearchService.SearchTerm))
-                return journals;
+        if (string.IsNullOrWhiteSpace(SearchService.SearchTerm))
+    return journals;
 
-            var searchTerm = SearchService.SearchTerm.ToLower();
-            return journals.Where(j => 
-                j.Content.ToLower().Contains(searchTerm) ||
-                j.EntryDay.ToString().Contains(searchTerm)
-            ).ToList();
-        }
+        var searchTerm = SearchService.SearchTerm.ToLower();
+        return journals.Where(j =>
+    j.Content.ToLower().Contains(searchTerm) ||
+    j.EntryDay.ToString().Contains(searchTerm)
+    ).ToList();
     }
+}
 
     private List<_23050370_Suyog_Sigdel.Models.JournalEntryModel> PaginatedJournals
+{
+    get
     {
-        get
-        {
-            return FilteredJournals
-                .Skip((currentPage - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-        }
+        return FilteredJournals
+        .Skip((currentPage - 1) * pageSize)
+    .Take(pageSize)
+    .ToList();
     }
+}
 
     private int TotalPages => (int)Math.Ceiling(FilteredJournals.Count / (double)pageSize);
 
     private void GoToPage(int page)
-    {
-        currentPage = page;
-        StateHasChanged();
-    }
+{
+    currentPage = page;
+StateHasChanged();
+}
 
     protected override async Task OnInitializedAsync()
-    {
-        await LoadJournals();
-        SearchService.OnSearchChanged += OnSearchChanged;
-    }
+{
+    await LoadJournals();
+    SearchService.OnSearchChanged += OnSearchChanged;
+}
 
     private void OnSearchChanged()
-    {
-        currentPage = 1;
-        StateHasChanged();
-    }
+{
+    currentPage = 1;
+StateHasChanged();
+}
 
     private async Task LoadJournals()
-    {
-        journals = await JournalService.GetEntriesAsync();
-        currentPage = 1;
-    }
+{
+    journals = await JournalService.GetEntriesAsync();
+    currentPage = 1;
+}
 
     private async Task StartEdit(_23050370_Suyog_Sigdel.Models.JournalEntryModel entry)
-    {
-        editingEntryId = entry.Id;
-        await richTextEditor!.LoadHTMLContent(entry.Content);
-        StateHasChanged();
-    }
+{
+    editingEntryId = entry.Id;
+    await richTextEditor!.LoadHTMLContent(entry.Content);
+StateHasChanged();
+}
 
     private async Task SaveEdit()
-    {
-        if (editingEntryId == null) return;
+{
+    if (editingEntryId == null) return;
 
-        var htmlContent = await richTextEditor!.GetHTML();
-        
-        if (string.IsNullOrWhiteSpace(htmlContent) || htmlContent == "<br>" || htmlContent == "<div><br></div>")
-        {
-            errorMessage = "Please write something before saving.";
-            errorModal?.Show();
-            return;
-        }
+    var htmlContent = await richTextEditor!.GetHTML();
 
-        var entry = journals?.FirstOrDefault(j => j.Id == editingEntryId.Value);
-        if (entry != null)
-        {
-            entry.Content = htmlContent;
-            entry.Date = DateTime.UtcNow;
-            await JournalService.UpdateEntryByIdAsync(editingEntryId.Value, htmlContent);
-        }
+    if (string.IsNullOrWhiteSpace(htmlContent) || htmlContent == "<br>" || htmlContent == "<div><br></div>")
+{
+    errorMessage = "Please write something before saving.";
+    errorModal?.Show();
+    return;
+}
 
-        await richTextEditor.Clear();
-        editingEntryId = null;
-        await LoadJournals();
-    }
+    var entry = journals?.FirstOrDefault(j => j.Id == editingEntryId.Value);
+    if (entry != null)
+{
+    entry.Content = htmlContent;
+    entry.Date = DateTime.UtcNow;
+    await JournalService.UpdateEntryByIdAsync(editingEntryId.Value, htmlContent);
+}
+
+    await richTextEditor.Clear();
+    editingEntryId = null;
+    await LoadJournals();
+}
 
     private async Task CancelEdit()
-    {
-        editingEntryId = null;
-        await richTextEditor!.Clear();
-        StateHasChanged();
-    }
+{
+    editingEntryId = null;
+    await richTextEditor!.Clear();
+StateHasChanged();
+}
 
     private async Task AddEntry()
-    {
-        var htmlContent = await richTextEditor!.GetHTML();
-        
-        if (string.IsNullOrWhiteSpace(htmlContent) || htmlContent == "<br>" || htmlContent == "<div><br></div>") 
-        {
-            errorMessage = "Please write something before adding an entry.";
-            errorModal?.Show();
-            return;
-        }
+{
+    var htmlContent = await richTextEditor!.GetHTML();
 
-        var today = DateOnly.FromDateTime(DateTime.Now);
-        var todayEntry = journals?.FirstOrDefault(j => j.EntryDay == today);
-        
-        if (todayEntry != null)
-        {
-            errorMessage = "A journal entry for today already exists. Please use 'Update Today' to modify it.";
-            errorModal?.Show();
-            return;
-        }
+    if (string.IsNullOrWhiteSpace(htmlContent) || htmlContent == "<br>" || htmlContent == "<div><br></div>")
+{
+    errorMessage = "Please write something before adding an entry.";
+    errorModal?.Show();
+    return;
+}
 
-        await JournalService.AddEntryAsync(htmlContent);
-        await richTextEditor.Clear();
-        await LoadJournals();
-    }
+    var today = DateOnly.FromDateTime(DateTime.Now);
+    var todayEntry = journals?.FirstOrDefault(j => j.EntryDay == today);
+
+    if (todayEntry != null)
+{
+    errorMessage = "A journal entry for today already exists. Please use 'Update Today' to modify it.";
+    errorModal?.Show();
+    return;
+}
+
+    await JournalService.AddEntryAsync(htmlContent);
+    await richTextEditor.Clear();
+    await LoadJournals();
+}
 
     private async Task UpdateEntry()
-    {
-        var htmlContent = await richTextEditor!.GetHTML();
-        
-        if (string.IsNullOrWhiteSpace(htmlContent) || htmlContent == "<br>" || htmlContent == "<div><br></div>")
-        {
-            errorMessage = "Please write something before updating an entry.";
-            errorModal?.Show();
-            return;
-        }
+{
+    var htmlContent = await richTextEditor!.GetHTML();
 
-        await JournalService.UpdateEntryAsync(htmlContent);
-        await richTextEditor.Clear();
-        await LoadJournals();
-    }
+    if (string.IsNullOrWhiteSpace(htmlContent) || htmlContent == "<br>" || htmlContent == "<div><br></div>")
+{
+    errorMessage = "Please write something before updating an entry.";
+    errorModal?.Show();
+    return;
+}
+
+    await JournalService.UpdateEntryAsync(htmlContent);
+    await richTextEditor.Clear();
+    await LoadJournals();
+}
 
     private void ShowDeleteModal(int id)
-    {
-        deleteEntryId = id;
-        deleteModal?.Show();
-    }
+{
+    deleteEntryId = id;
+    deleteModal?.Show();
+}
 
     private async Task OnDeleteModalClose(bool confirmed)
-    {
-        if (confirmed && deleteEntryId.HasValue)
-        {
-            await JournalService.DeleteEntryAsync(deleteEntryId.Value);
-            await LoadJournals();
-        }
-        deleteEntryId = null;
-    }
+{
+    if (confirmed && deleteEntryId.HasValue)
+{
+    await JournalService.DeleteEntryAsync(deleteEntryId.Value);
+    await LoadJournals();
+}
+    deleteEntryId = null;
+}
 
     private void OnErrorModalClose()
-    {
-        errorMessage = string.Empty;
-    }
+{
+    errorMessage = string.Empty;
+}
 
     public void Dispose()
-    {
-        SearchService.OnSearchChanged -= OnSearchChanged;
-    }
+{
+    SearchService.OnSearchChanged -= OnSearchChanged;
 }
+}
+

@@ -1,11 +1,122 @@
 .home-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 80vh;
+    max-width: 750px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
 }
 
-.home-container h1 {
-    font-size: 32px;
-    font-weight: normal;
+.welcome-section {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.welcome-section h1 {
+    font-size: 2rem;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    color: #7f8c8d;
+    font-size: 1rem;
+}
+
+.loading,
+.empty-message {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #7f8c8d;
+}
+
+.empty-message p {
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}
+
+.btn-start {
+    padding: 0.75rem 2rem;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-start:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+}
+
+.recent-section {
+    margin-top: 2rem;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
+    font-size: 1.5rem;
+    color: #2c3e50;
+}
+
+.btn-view-all {
+    padding: 0.5rem 1rem;
+    background: white;
+    color: #3498db;
+    border: 2px solid #3498db;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-view-all:hover {
+    background: #3498db;
+    color: white;
+}
+
+.journal-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+/* Dark theme support */
+.dark .welcome-section h1 {
+    color: #f8f9fa;
+}
+
+.dark .subtitle {
+    color: #adb5bd;
+}
+
+.dark .section-header h2 {
+    color: #f8f9fa;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .home-container {
+        padding: 1.5rem 1rem;
+    }
+
+    .welcome-section h1 {
+        font-size: 1.75rem;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .btn-view-all {
+        width: 100%;
+    }
 }

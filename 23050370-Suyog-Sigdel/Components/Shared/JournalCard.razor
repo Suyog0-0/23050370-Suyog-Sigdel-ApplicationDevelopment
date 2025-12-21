@@ -1,0 +1,33 @@
+@using _23050370_Suyog_Sigdel.Models
+
+<div class="journal-card @(IsEditing ? "editing" : "")">
+    <div class="entry-header">
+        <span class="date">@Entry.EntryDay.ToDateTime(TimeOnly.MinValue).ToString("dddd, MMMM dd, yyyy")</span>
+        <div class="entry-actions">
+            <button class="btn-edit" @onclick="OnEdit" title="Edit">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn-delete" @onclick="OnDelete" title="Delete">
+                ×
+            </button>
+        </div>
+    </div>
+    <div class="content">
+        @((MarkupString)Entry.Content)
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public JournalEntryModel Entry { get; set; } = null!;
+
+    [Parameter]
+    public bool IsEditing { get; set; } = false;
+
+    [Parameter]
+    public EventCallback OnEdit { get; set; }
+
+    [Parameter]
+    public EventCallback OnDelete { get; set; }
+}
+
