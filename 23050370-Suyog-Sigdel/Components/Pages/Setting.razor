@@ -1,0 +1,65 @@
+@page "/settings"
+@inject NavigationManager Navigation
+
+<div class="settings-container">
+    <div class="settings-header">
+        <button class="back-button" @onclick="GoBack">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <h1>Settings</h1>
+    </div>
+
+    <div class="settings-content">
+        <div class="settings-section">
+            <h2>Appearance</h2>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <span class="setting-label">Theme</span>
+                    <span class="setting-description">Toggle between light and dark mode</span>
+                </div>
+                <div class="setting-control">
+                    <span class="theme-note">Use the theme toggle in the navbar</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h2>About</h2>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <span class="setting-label">App Version</span>
+                    <span class="setting-description">Journaling App v1.0</span>
+                </div>
+            </div>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <span class="setting-label">Student ID</span>
+                    <span class="setting-description">23050370 - Suyog Sigdel</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h2>Application</h2>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <span class="setting-label">Database</span>
+                    <span class="setting-description">SQLite - Local storage</span>
+                </div>
+            </div>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <span class="setting-label">Framework</span>
+                    <span class="setting-description">.NET MAUI with Blazor</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

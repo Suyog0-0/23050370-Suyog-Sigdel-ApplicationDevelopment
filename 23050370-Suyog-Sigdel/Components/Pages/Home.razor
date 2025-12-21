@@ -5,42 +5,42 @@
 @using _23050370_Suyog_Sigdel.Components.Shared
 
 <div class="home-container">
-<div class="welcome-section">
-<h1>Welcome to Your Journal</h1>
-<p class="subtitle">Keep track of your thoughts and memories</p>
-</div>
+    <div class="welcome-section">
+        <h1>Welcome to Your Journal</h1>
+        <p class="subtitle">Keep track of your thoughts and memories</p>
+    </div>
 
-@if (recentJournals == null)
-{
-<div class="loading">Loading recent entries...</div>
-}
-else if (!recentJournals.Any())
-{
-<div class="empty-message">
-<p>No journal entries yet.</p>
-<button class="btn-start" @onclick="GoToJournals">Start Writing</button>
-</div>
-}
-else
-{
-<div class="recent-section">
-<div class="section-header">
-<h2>Recent Entries</h2>
-<button class="btn-view-all" @onclick="GoToJournals">View All</button>
-</div>
+    @if (recentJournals == null)
+    {
+        <div class="loading">Loading recent entries...</div>
+    }
+    else if (!recentJournals.Any())
+    {
+        <div class="empty-message">
+            <p>No journal entries yet.</p>
+            <button class="btn-start" @onclick="GoToJournals">Start Writing</button>
+        </div>
+    }
+    else
+    {
+        <div class="recent-section">
+            <div class="section-header">
+                <h2>Recent Entries</h2>
+                <button class="btn-view-all" @onclick="GoToJournals">View All</button>
+            </div>
 
-<div class="journal-list">
-@foreach (var entry in recentJournals)
-{
-<JournalCard Entry="@entry"
-OnEdit="@(() => EditEntry(entry.Id))"
-OnDelete="@(() => ShowDeleteModal(entry.Id))" />
-}
-</div>
-</div>
-}
+            <div class="journal-list">
+                @foreach (var entry in recentJournals)
+                {
+                    <JournalCard Entry="@entry"
+                                 OnEdit="@(() => EditEntry(entry.Id))"
+                                 OnDelete="@(() => ShowDeleteModal(entry.Id))" />
+                }
+            </div>
+        </div>
+    }
 
-<ConfirmDeleteModal @ref="deleteModal" OnClose="OnDeleteModalClose" />
+    <ConfirmDeleteModal @ref="deleteModal" OnClose="OnDeleteModalClose" />
 </div>
 
 @code {
@@ -49,40 +49,39 @@ OnDelete="@(() => ShowDeleteModal(entry.Id))" />
     private int? deleteEntryId;
 
     protected override async Task OnInitializedAsync()
-{
-    await LoadJournals();
-}
+    {
+        await LoadJournals();
+    }
 
     private async Task LoadJournals()
-{
-    var allJournals = await JournalService.GetEntriesAsync();
-    recentJournals = allJournals.Take(5).ToList();
-}
+    {
+        var allJournals = await JournalService.GetEntriesAsync();
+        recentJournals = allJournals.Take(5).ToList();
+    }
 
     private void GoToJournals()
-{
-    Navigation.NavigateTo("/journals");
-}
+    {
+        Navigation.NavigateTo("/journals");
+    }
 
     private void EditEntry(int id)
-{
-    Navigation.NavigateTo("/journals");
-}
+    {
+        Navigation.NavigateTo("/journals");
+    }
 
     private void ShowDeleteModal(int id)
-{
-    deleteEntryId = id;
-    deleteModal?.Show();
-}
+    {
+        deleteEntryId = id;
+        deleteModal?.Show();
+    }
 
     private async Task OnDeleteModalClose(bool confirmed)
-{
-    if (confirmed && deleteEntryId.HasValue)
-{
-    await JournalService.DeleteEntryAsync(deleteEntryId.Value);
-    await LoadJournals();
+    {
+        if (confirmed && deleteEntryId.HasValue)
+        {
+            await JournalService.DeleteEntryAsync(deleteEntryId.Value);
+            await LoadJournals();
+        }
+        deleteEntryId = null;
+    }
 }
-    deleteEntryId = null;
-}
-}
-

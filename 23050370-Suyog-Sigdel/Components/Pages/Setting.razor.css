@@ -1,0 +1,185 @@
+.settings-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+.settings-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.back-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: #f0f2f5;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.back-button:hover {
+    background: #e4e6eb;
+    color: #3498db;
+    transform: translateX(-3px);
+}
+
+.back-button i {
+    font-size: 1.1rem;
+}
+
+.settings-header h1 {
+    font-size: 2rem;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.settings-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.settings-section {
+    background: white;
+    border: 2px solid #e8ecef;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.settings-section h2 {
+    font-size: 1.3rem;
+    color: #34495e;
+    margin: 0 0 1.2rem 0;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.setting-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.setting-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.setting-label {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #2c3e50;
+}
+
+.setting-description {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+}
+
+.setting-control {
+    display: flex;
+    align-items: center;
+}
+
+.theme-note {
+    font-size: 0.9rem;
+    color: #95a5a6;
+    font-style: italic;
+}
+
+/* Dark theme support */
+.dark .settings-header {
+    border-bottom-color: #3a3a3a;
+}
+
+.dark .settings-header h1 {
+    color: #f8f9fa;
+}
+
+.dark .back-button {
+    background: #2a2a2a;
+    color: #ccc;
+}
+
+.dark .back-button:hover {
+    background: #333;
+    color: #64b5f6;
+}
+
+.dark .settings-section {
+    background: #2a2a2a;
+    border-color: #3a3a3a;
+}
+
+.dark .settings-section h2 {
+    color: #e0e0e0;
+    border-bottom-color: #3a3a3a;
+}
+
+.dark .setting-item {
+    border-bottom-color: #333;
+}
+
+.dark .setting-label {
+    color: #e0e0e0;
+}
+
+.dark .setting-description {
+    color: #adb5bd;
+}
+
+.dark .theme-note {
+    color: #6c757d;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .settings-container {
+        padding: 1.5rem 1rem;
+    }
+
+    .settings-header h1 {
+        font-size: 1.6rem;
+    }
+
+    .settings-section {
+        padding: 1.2rem;
+    }
+
+    .settings-section h2 {
+        font-size: 1.15rem;
+    }
+
+    .setting-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.8rem;
+    }
+
+    .setting-label {
+        font-size: 0.95rem;
+    }
+
+    .setting-description {
+        font-size: 0.85rem;
+    }
+}

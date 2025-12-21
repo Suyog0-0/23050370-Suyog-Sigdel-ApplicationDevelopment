@@ -33,6 +33,10 @@
                 Journals
             </NavLink>
             
+            <NavLink href="/settings" class="settings-icon-link" activeclass="active" title="Settings">
+                <i class="fas fa-cog"></i>
+            </NavLink>
+            
             <button class="theme-toggle" @onclick="ToggleTheme">
                 <i class="@(ThemeService.IsDarkMode ? "fas fa-moon" : "fas fa-sun")"></i>
             </button>
