@@ -1,0 +1,53 @@
+@if (TotalPages > 1)
+{
+    <div class="pagination">
+        <button class="page-btn" @onclick="OnFirstPage" disabled="@(CurrentPage == 1)">
+            <i class="fas fa-angle-double-left"></i>
+        </button>
+        <button class="page-btn" @onclick="OnPreviousPage" disabled="@(CurrentPage == 1)">
+            <i class="fas fa-angle-left"></i>
+        </button>
+
+        @foreach (var pageNum in GetPageNumbers())
+        {
+            var currentPageNum = pageNum;
+            <button class="page-btn @(currentPageNum == CurrentPage ? "active" : "")" 
+                    @onclick="@(() => OnPageChanged.InvokeAsync(currentPageNum))">
+                @currentPageNum
+            </button>
+        }
+
+        <button class="page-btn" @onclick="OnNextPage" disabled="@(CurrentPage == TotalPages)">
+            <i class="fas fa-angle-right"></i>
+        </button>
+        <button class="page-btn" @onclick="OnLastPage" disabled="@(CurrentPage == TotalPages)">
+            <i class="fas fa-angle-double-right"></i>
+        </button>
+    </div>
+}
+
+@code {
+    [Parameter] public int CurrentPage { get; set; } = 1;
+    [Parameter] public int TotalPages { get; set; }
+    [Parameter] public EventCallback<int> OnPageChanged { get; set; }
+
+    private List<int> GetPageNumbers()
+    {
+        var pages = new List<int>();
+        var startPage = Math.Max(1, CurrentPage - 2);
+        var endPage = Math.Min(TotalPages, CurrentPage + 2);
+
+        for (int i = startPage; i <= endPage; i++)
+        {
+            pages.Add(i);
+        }
+
+        return pages;
+    }
+
+    private async Task OnFirstPage() => await OnPageChanged.InvokeAsync(1);
+    private async Task OnPreviousPage() => await OnPageChanged.InvokeAsync(Math.Max(1, CurrentPage - 1));
+    private async Task OnNextPage() => await OnPageChanged.InvokeAsync(Math.Min(TotalPages, CurrentPage + 1));
+    private async Task OnLastPage() => await OnPageChanged.InvokeAsync(TotalPages);
+}
+

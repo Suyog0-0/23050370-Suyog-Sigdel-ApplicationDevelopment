@@ -2,7 +2,7 @@
 @inject _23050370_Suyog_Sigdel.Services.JournalService JournalService
 @inject _23050370_Suyog_Sigdel.Services.SearchService SearchService
 @using _23050370_Suyog_Sigdel.Components.Modals
-@using _23050370_Suyog_Sigdel.Components
+@using _23050370_Suyog_Sigdel.Components.Shared
 @implements IDisposable
 
 <div class="journal-container">
@@ -11,8 +11,16 @@
     <div class="input-section">
         <RichTextEditor @ref="richTextEditor" />
         <div class="button-row">
-            <button class="btn-add" @onclick="AddEntry">Add Today</button>
-            <button class="btn-update" @onclick="UpdateEntry">Update Today</button>
+            @if (editingEntryId == null)
+            {
+                <button class="btn-add" @onclick="AddEntry">Add Today</button>
+                <button class="btn-update" @onclick="UpdateEntry">Update Today</button>
+            }
+            else
+            {
+                <button class="btn-save" @onclick="SaveEdit">Save Changes</button>
+                <button class="btn-cancel" @onclick="CancelEdit">Cancel</button>
+            }
         </div>
     </div>
 
@@ -43,14 +51,19 @@
         }
 
         <div class="entries-container">
-            @foreach (var entry in FilteredJournals)
+            @foreach (var entry in PaginatedJournals)
             {
-                <div class="journal-card">
+                <div class="journal-card @(editingEntryId == entry.Id ? "editing" : "")">
                     <div class="entry-header">
                         <span class="date">@entry.EntryDay.ToDateTime(TimeOnly.MinValue).ToString("dddd, MMMM dd, yyyy")</span>
-                        <button class="btn-delete" @onclick="() => ShowDeleteModal(entry.Id)">
-                            ×
-                        </button>
+                        <div class="entry-actions">
+                            <button class="btn-edit" @onclick="() => StartEdit(entry)" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-delete" @onclick="() => ShowDeleteModal(entry.Id)" title="Delete">
+                                ×
+                            </button>
+                        </div>
                     </div>
                     <div class="content">
                         @((MarkupString)entry.Content)
@@ -58,6 +71,10 @@
                 </div>
             }
         </div>
+
+        <Pagination CurrentPage="@currentPage" 
+                    TotalPages="@TotalPages" 
+                    OnPageChanged="@GoToPage" />
     }
 
     <ConfirmDeleteModal @ref="deleteModal" OnClose="OnDeleteModalClose" />
@@ -70,7 +87,12 @@
     private ConfirmDeleteModal? deleteModal;
     private ErrorModal? errorModal;
     private int? deleteEntryId;
+    private int? editingEntryId;
     private string errorMessage = string.Empty;
+
+    // Pagination variables
+    private int pageSize = 5;
+    private int currentPage = 1;
 
     private List<_23050370_Suyog_Sigdel.Models.JournalEntryModel> FilteredJournals
     {
@@ -89,6 +111,25 @@
         }
     }
 
+    private List<_23050370_Suyog_Sigdel.Models.JournalEntryModel> PaginatedJournals
+    {
+        get
+        {
+            return FilteredJournals
+                .Skip((currentPage - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+        }
+    }
+
+    private int TotalPages => (int)Math.Ceiling(FilteredJournals.Count / (double)pageSize);
+
+    private void GoToPage(int page)
+    {
+        currentPage = page;
+        StateHasChanged();
+    }
+
     protected override async Task OnInitializedAsync()
     {
         await LoadJournals();
@@ -97,10 +138,55 @@
 
     private void OnSearchChanged()
     {
+        currentPage = 1;
         StateHasChanged();
     }
 
-    private async Task LoadJournals() => journals = await JournalService.GetEntriesAsync();
+    private async Task LoadJournals()
+    {
+        journals = await JournalService.GetEntriesAsync();
+        currentPage = 1;
+    }
+
+    private async Task StartEdit(_23050370_Suyog_Sigdel.Models.JournalEntryModel entry)
+    {
+        editingEntryId = entry.Id;
+        await richTextEditor!.LoadHTMLContent(entry.Content);
+        StateHasChanged();
+    }
+
+    private async Task SaveEdit()
+    {
+        if (editingEntryId == null) return;
+
+        var htmlContent = await richTextEditor!.GetHTML();
+        
+        if (string.IsNullOrWhiteSpace(htmlContent) || htmlContent == "<br>" || htmlContent == "<div><br></div>")
+        {
+            errorMessage = "Please write something before saving.";
+            errorModal?.Show();
+            return;
+        }
+
+        var entry = journals?.FirstOrDefault(j => j.Id == editingEntryId.Value);
+        if (entry != null)
+        {
+            entry.Content = htmlContent;
+            entry.Date = DateTime.UtcNow;
+            await JournalService.UpdateEntryByIdAsync(editingEntryId.Value, htmlContent);
+        }
+
+        await richTextEditor.Clear();
+        editingEntryId = null;
+        await LoadJournals();
+    }
+
+    private async Task CancelEdit()
+    {
+        editingEntryId = null;
+        await richTextEditor!.Clear();
+        StateHasChanged();
+    }
 
     private async Task AddEntry()
     {
