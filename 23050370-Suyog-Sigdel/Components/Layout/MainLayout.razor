@@ -1,21 +1,42 @@
 ﻿@using _23050370_Suyog_Sigdel.Services
+@using _23050370_Suyog_Sigdel.Components.Shared
 @using Microsoft.Data.Sqlite
 @inherits LayoutComponentBase
 @inject ThemeService ThemeService
+@inject NavigationManager Navigation
 
 <div class="main-layout @ThemeClass">
-    <Navbar />
-    <div class="content">
-        @Body
-    </div>
+    @if (IsLoginPage)
+    {
+        @* Login page doesn't need navbar or auth guard *@
+        <div class="content">
+            @Body
+        </div>
+    }
+    else
+    {
+        <AuthGuard>
+            <Navbar />
+            <div class="content">
+                @Body
+            </div>
+        </AuthGuard>
+    }
 </div>
 
 @code {
     private string ThemeClass => ThemeService.IsDark ? "dark" : "light";
+    private bool IsLoginPage => Navigation.Uri.Contains("/login");
 
     protected override void OnInitialized()
     {
         ThemeService.OnThemeChanged += StateHasChanged;
+        Navigation.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        StateHasChanged();
     }
 
     protected override async Task OnInitializedAsync()
@@ -27,7 +48,7 @@
             Console.WriteLine($"SQLite DB Path: {dbPath}");
 
             // Open a test connection
-            using var connection = new SqliteConnection($"Data Source={dbPath}"); //For finding Db Path for SQLLite Nightly (GUI)
+            using var connection = new SqliteConnection($"Data Source={dbPath}");
             await connection.OpenAsync();
             Console.WriteLine("✅ Connected to SQLite successfully!");
             await connection.CloseAsync();
@@ -37,5 +58,10 @@
             Console.WriteLine("❌ SQLite connection failed:");
             Console.WriteLine(ex.Message);
         }
+    }
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= OnLocationChanged;
     }
 }

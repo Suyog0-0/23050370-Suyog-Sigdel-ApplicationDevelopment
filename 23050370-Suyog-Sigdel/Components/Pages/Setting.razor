@@ -1,5 +1,7 @@
 @page "/settings"
 @inject NavigationManager Navigation
+@inject _23050370_Suyog_Sigdel.Services.SecurityService SecurityService
+@using _23050370_Suyog_Sigdel.Components.Modals
 
 <div class="settings-container">
     <div class="settings-header">
@@ -10,6 +12,54 @@
     </div>
 
     <div class="settings-content">
+        <div class="settings-section">
+            <h2>Security & Privacy</h2>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <span class="setting-label">PIN Protection</span>
+                    <span class="setting-description">
+                        @if (isPinEnabled)
+                        {
+                            <text>App is locked with a 4-digit PIN</text>
+                        }
+                        else
+                        {
+                            <text>Protect your journal with a PIN</text>
+                        }
+                    </span>
+                </div>
+                <div class="setting-control">
+                    @if (!isPinEnabled)
+                    {
+                        <button class="btn-enable-pin" @onclick="ShowSetPinDialog">
+                            Enable PIN
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="btn-disable-pin" @onclick="ShowDisablePinDialog">
+                            Disable PIN
+                        </button>
+                    }
+                </div>
+            </div>
+            
+            @if (isPinEnabled)
+            {
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <span class="setting-label">Change PIN</span>
+                        <span class="setting-description">Update your security PIN</span>
+                    </div>
+                    <div class="setting-control">
+                        <button class="btn-change-pin" @onclick="ShowSetPinDialog">
+                            Change
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+
         <div class="settings-section">
             <h2>Appearance</h2>
             <div class="setting-item">
@@ -55,11 +105,113 @@
             </div>
         </div>
     </div>
+
+    <!-- Set/Change PIN Dialog -->
+    @if (showPinDialog)
+    {
+        <div class="pin-modal-backdrop">
+            <div class="pin-modal">
+                <h3>@(isPinEnabled ? "Change PIN" : "Set PIN")</h3>
+                <p>Enter a 4-digit PIN</p>
+                
+                <input type="password" 
+                       class="pin-modal-input" 
+                       maxlength="4" 
+                       placeholder="****" 
+                       @bind="newPin"
+                       @bind:event="oninput" />
+                
+                @if (!string.IsNullOrEmpty(pinError))
+                {
+                    <div class="pin-error">@pinError</div>
+                }
+                
+                <div class="pin-modal-actions">
+                    <button class="btn-pin-save" @onclick="SavePin">Save</button>
+                    <button class="btn-pin-cancel" @onclick="HidePinDialog">Cancel</button>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Disable PIN Confirmation -->
+    <ConfirmDeleteModal @ref="disablePinModal" 
+                        Message="Are you sure you want to disable PIN protection?" 
+                        OnClose="OnDisablePinConfirm" />
 </div>
 
 @code {
+    private bool isPinEnabled = false;
+    private bool showPinDialog = false;
+    private string newPin = string.Empty;
+    private string pinError = string.Empty;
+    private ConfirmDeleteModal? disablePinModal;
+
+    protected override async Task OnInitializedAsync()
+    {
+        isPinEnabled = await SecurityService.IsPinEnabledAsync();
+    }
+
     private void GoBack()
     {
         Navigation.NavigateTo("/");
+    }
+
+    private void ShowSetPinDialog()
+    {
+        showPinDialog = true;
+        newPin = string.Empty;
+        pinError = string.Empty;
+    }
+
+    private void HidePinDialog()
+    {
+        showPinDialog = false;
+        newPin = string.Empty;
+        pinError = string.Empty;
+    }
+
+    private async Task SavePin()
+    {
+        if (newPin.Length != 4)
+        {
+            pinError = "PIN must be exactly 4 digits";
+            return;
+        }
+
+        if (!newPin.All(char.IsDigit))
+        {
+            pinError = "PIN must contain only numbers";
+            return;
+        }
+
+        bool success = await SecurityService.SetPinAsync(newPin);
+        
+        if (success)
+        {
+            isPinEnabled = true;
+            HidePinDialog();
+        }
+        else
+        {
+            pinError = "Failed to set PIN. Please try again.";
+        }
+    }
+
+    private void ShowDisablePinDialog()
+    {
+        disablePinModal?.Show();
+    }
+
+    private async Task OnDisablePinConfirm(bool confirmed)
+    {
+        if (confirmed)
+        {
+            bool success = await SecurityService.DisablePinAsync();
+            if (success)
+            {
+                isPinEnabled = false;
+            }
+        }
     }
 }

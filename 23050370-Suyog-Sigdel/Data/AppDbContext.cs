@@ -5,8 +5,9 @@ namespace _23050370_Suyog_Sigdel.Data
 {
     public class AppDbContext : DbContext
     {
-        // Model class
+        // Model classes
         public DbSet<JournalEntryModel> JournalEntries { get; set; } = null!;
+        public DbSet<SecurityModel> SecuritySettings { get; set; } = null!;
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 

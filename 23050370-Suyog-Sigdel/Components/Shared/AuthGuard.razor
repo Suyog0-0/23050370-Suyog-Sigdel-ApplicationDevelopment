@@ -1,0 +1,75 @@
+@inject _23050370_Suyog_Sigdel.Services.SecurityService SecurityService
+@inject NavigationManager Navigation
+@implements IDisposable
+
+@if (isChecking)
+{
+    <div class="auth-loading">
+        <div class="spinner"></div>
+        <p>Checking authentication...</p>
+    </div>
+}
+else if (isAuthenticated)
+{
+    @ChildContent
+}
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private bool isChecking = true;
+    private bool isAuthenticated = false;
+    private bool hasChecked = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        SecurityService.OnAuthenticationChanged += OnAuthChanged;
+        await CheckAuthentication();
+    }
+
+    private async Task CheckAuthentication()
+    {
+        if (hasChecked) return; // Prevent re-checking
+        
+        isChecking = true;
+        
+        // Check if we're already on the login page
+        var currentUri = Navigation.Uri;
+        if (currentUri.Contains("/login"))
+        {
+            isChecking = false;
+            hasChecked = true;
+            return;
+        }
+        
+        bool isPinEnabled = await SecurityService.IsPinEnabledAsync();
+        
+        if (isPinEnabled && !SecurityService.IsAuthenticated)
+        {
+            hasChecked = true;
+            Navigation.NavigateTo("/login", replace: true);
+            return;
+        }
+        
+        isAuthenticated = true;
+        isChecking = false;
+        hasChecked = true;
+        StateHasChanged();
+    }
+
+    private void OnAuthChanged()
+    {
+        isAuthenticated = SecurityService.IsAuthenticated;
+        
+        if (isAuthenticated)
+        {
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose()
+    {
+        SecurityService.OnAuthenticationChanged -= OnAuthChanged;
+    }
+}

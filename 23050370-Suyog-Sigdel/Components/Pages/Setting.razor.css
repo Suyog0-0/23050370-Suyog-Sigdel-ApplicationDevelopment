@@ -183,3 +183,165 @@
         font-size: 0.85rem;
     }
 }
+
+/*-----------------------------------------------------------*/
+/* PIN Modal Styles */
+.pin-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.pin-modal {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    max-width: 350px;
+    width: 90%;
+    text-align: center;
+}
+
+.pin-modal h3 {
+    font-size: 1.5rem;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.pin-modal p {
+    color: #7f8c8d;
+    margin-bottom: 1.5rem;
+}
+
+.pin-modal-input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    font-size: 1.5rem;
+    text-align: center;
+    letter-spacing: 0.8rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-family: monospace;
+}
+
+.pin-modal-input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.pin-error {
+    background: #fee;
+    color: #e74c3c;
+    padding: 0.5rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.pin-modal-actions {
+    display: flex;
+    gap: 0.8rem;
+}
+
+.btn-pin-save,
+.btn-pin-cancel {
+    flex: 1;
+    padding: 0.7rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-pin-save {
+    background: #27ae60;
+    color: white;
+}
+
+.btn-pin-save:hover {
+    background: #1e874a;
+}
+
+.btn-pin-cancel {
+    background: #95a5a6;
+    color: white;
+}
+
+.btn-pin-cancel:hover {
+    background: #7f8c8d;
+}
+
+/* Security Button Styles */
+.btn-enable-pin,
+.btn-disable-pin,
+.btn-change-pin {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.btn-enable-pin {
+    background: #27ae60;
+    color: white;
+}
+
+.btn-enable-pin:hover {
+    background: #1e874a;
+}
+
+.btn-disable-pin {
+    background: #e74c3c;
+    color: white;
+}
+
+.btn-disable-pin:hover {
+    background: #c0392b;
+}
+
+.btn-change-pin {
+    background: #3498db;
+    color: white;
+}
+
+.btn-change-pin:hover {
+    background: #2980b9;
+}
+
+/* Dark Mode for PIN Modal */
+.dark .pin-modal {
+    background: #2a2a2a;
+}
+
+.dark .pin-modal h3 {
+    color: #f8f9fa;
+}
+
+.dark .pin-modal p {
+    color: #adb5bd;
+}
+
+.dark .pin-modal-input {
+    background: #1a1a1a;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+.dark .pin-modal-input:focus {
+    border-color: #3498db;
+    background: #252525;
+}
+

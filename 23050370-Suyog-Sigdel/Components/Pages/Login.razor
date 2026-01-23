@@ -1,0 +1,66 @@
+@page "/login"
+@inject _23050370_Suyog_Sigdel.Services.SecurityService SecurityService
+@inject NavigationManager Navigation
+
+<div class="login-container">
+    <div class="login-box">
+        <div class="login-header">
+            <i class="fas fa-lock"></i>
+            <h1>Enter PIN</h1>
+        </div>
+        
+        <p class="login-subtitle">Please enter your 4-digit PIN</p>
+
+        <input type="password" 
+               class="pin-input" 
+               maxlength="4" 
+               placeholder="Enter PIN" 
+               @bind="pinInput"
+               @bind:event="oninput"
+               @onkeydown="HandleKeyPress"
+               autofocus />
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="error-message">@errorMessage</div>
+        }
+
+        <button class="btn-unlock" @onclick="VerifyPin" disabled="@(pinInput.Length != 4)">
+            Unlock
+        </button>
+    </div>
+</div>
+
+@code {
+    private string pinInput = string.Empty;
+    private string errorMessage = string.Empty;
+
+    private async Task VerifyPin()
+    {
+        if (pinInput.Length != 4)
+        {
+            errorMessage = "PIN must be 4 digits";
+            return;
+        }
+
+        bool isValid = await SecurityService.VerifyPinAsync(pinInput);
+
+        if (isValid)
+        {
+            Navigation.NavigateTo("/", forceLoad: true);
+        }
+        else
+        {
+            errorMessage = "Incorrect PIN. Please try again.";
+            pinInput = string.Empty;
+        }
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && pinInput.Length == 4)
+        {
+            await VerifyPin();
+        }
+    }
+}
