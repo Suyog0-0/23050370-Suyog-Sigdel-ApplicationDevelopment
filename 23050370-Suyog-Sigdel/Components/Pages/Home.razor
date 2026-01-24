@@ -10,6 +10,9 @@
         <p class="subtitle">Keep track of your thoughts and memories</p>
     </div>
 
+    <!-- ADD STREAK STATS HERE -->
+    <StreakStats @ref="streakStats" />
+
     @if (recentJournals == null)
     {
         <div class="loading">Loading recent entries...</div>
@@ -46,6 +49,7 @@
 @code {
     private List<_23050370_Suyog_Sigdel.Models.JournalEntryModel>? recentJournals;
     private ConfirmDeleteModal? deleteModal;
+    private StreakStats? streakStats;
     private int? deleteEntryId;
 
     protected override async Task OnInitializedAsync()
@@ -57,6 +61,12 @@
     {
         var allJournals = await JournalService.GetEntriesAsync();
         recentJournals = allJournals.Take(5).ToList();
+        
+        // Refresh streak stats after loading journals (with null check)
+        if (streakStats != null)
+        {
+            await streakStats.RefreshStats();
+        }
     }
 
     private void GoToJournals()

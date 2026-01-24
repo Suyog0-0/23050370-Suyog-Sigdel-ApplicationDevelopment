@@ -1,5 +1,6 @@
 ﻿using _23050370_Suyog_Sigdel.Services;
 using _23050370_Suyog_Sigdel.Data;
+using _23050370_Suyog_Sigdel.Services.StreakService;
 using _23050370_Suyog_Sigdel.Services.TagService;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -42,6 +43,8 @@ public static class MauiProgram
         builder.Services.AddScoped<TagService>();
         builder.Services.AddSingleton<ThemeService>();
         builder.Services.AddSingleton<SearchService>();
+        builder.Services.AddScoped<StreakService>();
+
         
         builder.Services.AddSingleton<SecurityService>(serviceProvider => 
         {

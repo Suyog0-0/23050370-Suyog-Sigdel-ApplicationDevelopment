@@ -1,0 +1,74 @@
+@using _23050370_Suyog_Sigdel.Services.StreakService
+@inject StreakService StreakService
+
+<div class="streak-container">
+    <h2 class="streak-title">Your Progress</h2>
+    
+    <div class="streak-grid">
+        <div class="stat-card current-streak">
+            <div class="stat-icon">
+                <i class="fas fa-fire"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@currentStreak</div>
+                <div class="stat-label">Current Streak</div>
+            </div>
+        </div>
+
+        <div class="stat-card longest-streak">
+            <div class="stat-icon">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@longestStreak</div>
+                <div class="stat-label">Longest Streak</div>
+            </div>
+        </div>
+
+        <div class="stat-card total-entries">
+            <div class="stat-icon">
+                <i class="fas fa-book"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@totalEntries</div>
+                <div class="stat-label">Total Entries</div>
+            </div>
+        </div>
+
+        <div class="stat-card missed-days">
+            <div class="stat-icon">
+                <i class="fas fa-calendar-times"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@missedDays</div>
+                <div class="stat-label">Missed Days</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private int currentStreak = 0;
+    private int longestStreak = 0;
+    private int totalEntries = 0;
+    private int missedDays = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadStreakData();
+    }
+
+    private async Task LoadStreakData()
+    {
+        currentStreak = await StreakService.GetCurrentStreakAsync();
+        longestStreak = await StreakService.GetLongestStreakAsync();
+        totalEntries = await StreakService.GetTotalEntriesAsync();
+        missedDays = await StreakService.GetMissedDaysAsync();
+    }
+
+    public async Task RefreshStats()
+    {
+        await LoadStreakData();
+        StateHasChanged();
+    }
+}
