@@ -1,6 +1,7 @@
 @page "/journals"
 @inject _23050370_Suyog_Sigdel.Services.JournalService JournalService
 @inject _23050370_Suyog_Sigdel.Services.SearchService SearchService
+@inject _23050370_Suyog_Sigdel.Services.TagService.TagService TagService
 @inject NavigationManager Navigation
 @using _23050370_Suyog_Sigdel.Components.Modals
 @using _23050370_Suyog_Sigdel.Components.Shared
@@ -20,6 +21,27 @@
             class="title-input" 
             placeholder="Enter title (optional)..." 
             @bind="titleText" />
+        
+        <!-- Tag Input -->
+        <div class="tag-input-container">
+            <input 
+                type="text" 
+                class="tag-input" 
+                placeholder="Add tags (press Enter or comma)..." 
+                @bind="currentTagInput"
+                @bind:event="oninput"
+                @onkeydown="HandleTagKeyPress" />
+            
+            <div class="tags-display">
+                @foreach (var tag in selectedTags)
+                {
+                    <span class="tag-badge">
+                        @tag
+                        <button class="tag-remove" @onclick="() => RemoveTag(tag)">×</button>
+                    </span>
+                }
+            </div>
+        </div>
         
         <RichTextEditor @ref="richTextEditor" />
         
@@ -92,6 +114,10 @@
     private string errorMessage = string.Empty;
     private string titleText = string.Empty;
 
+    // Tag-related fields
+    private string currentTagInput = string.Empty;
+    private List<string> selectedTags = new();
+
     // Pagination variables
     private int pageSize = 5;
     private int currentPage = 1;
@@ -109,7 +135,8 @@
             return journals.Where(j =>
                 j.Title.ToLower().Contains(searchTerm) ||
                 j.Content.ToLower().Contains(searchTerm) ||
-                j.EntryDay.ToString().Contains(searchTerm)
+                j.EntryDay.ToString().Contains(searchTerm) ||
+                j.Tags.Any(t => t.Name.ToLower().Contains(searchTerm))
             ).ToList();
         }
     }
@@ -156,10 +183,41 @@
         currentPage = 1;
     }
 
+    // ────────────────────────────────────────────────────────
+    // TAG HANDLING
+    // ────────────────────────────────────────────────────────
+    private void HandleTagKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" || e.Key == ",")
+        {
+            AddCurrentTag();
+        }
+    }
+
+    private void AddCurrentTag()
+    {
+        var tag = currentTagInput.Trim().ToLower().Replace(",", "");
+        
+        if (!string.IsNullOrWhiteSpace(tag) && !selectedTags.Contains(tag))
+        {
+            selectedTags.Add(tag);
+            currentTagInput = string.Empty;
+        }
+    }
+
+    private void RemoveTag(string tag)
+    {
+        selectedTags.Remove(tag);
+    }
+
+    // ────────────────────────────────────────────────────────
+    // JOURNAL ENTRY OPERATIONS
+    // ────────────────────────────────────────────────────────
     private async Task StartEdit(_23050370_Suyog_Sigdel.Models.JournalEntryModel entry)
     {
         editingEntryId = entry.Id;
         titleText = entry.Title;
+        selectedTags = entry.Tags.Select(t => t.Name).ToList();
         await richTextEditor!.LoadHTMLContent(entry.Content);
         StateHasChanged();
     }
@@ -177,17 +235,14 @@
             return;
         }
 
-        var entry = journals?.FirstOrDefault(j => j.Id == editingEntryId.Value);
-        if (entry != null)
-        {
-            entry.Title = titleText;
-            entry.Content = htmlContent;
-            entry.Date = DateTime.UtcNow;
-            await JournalService.UpdateEntryByIdAsync(editingEntryId.Value, titleText, htmlContent);
-        }
+        // Add any pending tag
+        AddCurrentTag();
+
+        await JournalService.UpdateEntryByIdAsync(editingEntryId.Value, titleText, htmlContent, selectedTags);
 
         await richTextEditor.Clear();
         titleText = string.Empty;
+        selectedTags.Clear();
         editingEntryId = null;
         await LoadJournals();
     }
@@ -196,6 +251,7 @@
     {
         editingEntryId = null;
         titleText = string.Empty;
+        selectedTags.Clear();
         await richTextEditor!.Clear();
         StateHasChanged();
     }
@@ -221,9 +277,13 @@
             return;
         }
 
-        await JournalService.AddEntryAsync(titleText, htmlContent);
+        // Add any pending tag
+        AddCurrentTag();
+
+        await JournalService.AddEntryAsync(titleText, htmlContent, selectedTags);
         await richTextEditor.Clear();
         titleText = string.Empty;
+        selectedTags.Clear();
         await LoadJournals();
     }
 
@@ -238,9 +298,13 @@
             return;
         }
 
-        await JournalService.UpdateEntryAsync(titleText, htmlContent);
+        // Add any pending tag
+        AddCurrentTag();
+
+        await JournalService.UpdateEntryAsync(titleText, htmlContent, selectedTags);
         await richTextEditor.Clear();
         titleText = string.Empty;
+        selectedTags.Clear();
         await LoadJournals();
     }
 

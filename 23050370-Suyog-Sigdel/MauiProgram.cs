@@ -1,6 +1,6 @@
 ﻿using _23050370_Suyog_Sigdel.Services;
 using _23050370_Suyog_Sigdel.Data;
-
+using _23050370_Suyog_Sigdel.Services.TagService;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -39,12 +39,13 @@ public static class MauiProgram
         // DEPENDENCY INJECTION (SERVICES)
         // ----------------------------------------------------
         builder.Services.AddScoped<JournalService>();
+        builder.Services.AddScoped<TagService>();
         builder.Services.AddSingleton<ThemeService>();
         builder.Services.AddSingleton<SearchService>();
         
         builder.Services.AddSingleton<SecurityService>(serviceProvider => 
         {
-            //  Single instance for entire app (As app was running in continuous loop
+            //  Single instance for entire app (As app was running in continuous loop)
             var scope = serviceProvider.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             return new SecurityService(dbContext);

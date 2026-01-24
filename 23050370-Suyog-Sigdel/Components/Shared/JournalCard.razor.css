@@ -47,6 +47,32 @@
     font-size: 0.9rem;
 }
 
+/* ==================== TAG CHIPS ==================== */
+.entry-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+}
+
+.tag-chip {
+    display: inline-block;
+    padding: 0.3rem 0.7rem;
+    background: var(--primary-light, #e7f3ff);
+    color: var(--primary-color, #3498db);
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1px solid var(--primary-color, #3498db);
+}
+
+.dark .tag-chip {
+    background: rgba(52, 152, 219, 0.2);
+    color: #5dade2;
+    border-color: #5dade2;
+}
+
+/* ==================== ACTION BUTTONS ==================== */
 .entry-actions {
     display: flex;
     gap: 0.5rem;
@@ -143,5 +169,10 @@
 
     .date {
         font-size: 0.85rem;
+    }
+
+    .tag-chip {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.6rem;
     }
 }

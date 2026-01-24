@@ -21,5 +21,8 @@ public class JournalEntryModel
     public DateTime Date { get; set; } = DateTime.UtcNow;
     
     [Column("entry_day")]
-    public DateOnly EntryDay { get; set; } 
+    public DateOnly EntryDay { get; set; }
+    
+    // Navigation property having many-to-many relationship with tags
+    public List<TagModel> Tags { get; set; } = new();
 }

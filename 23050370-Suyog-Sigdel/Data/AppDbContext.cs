@@ -8,6 +8,7 @@ namespace _23050370_Suyog_Sigdel.Data
         // Model classes
         public DbSet<JournalEntryModel> JournalEntries { get; set; } = null!;
         public DbSet<SecurityModel> SecuritySettings { get; set; } = null!;
+        public DbSet<TagModel> Tags { get; set; } = null!;
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -20,6 +21,12 @@ namespace _23050370_Suyog_Sigdel.Data
                     v => v.ToString(),       // store as string
                     v => DateOnly.Parse(v)   // convert back to DateOnly
                 );
+
+            // Many-to-many relationship between JournalEntry and Tag
+            modelBuilder.Entity<JournalEntryModel>()
+                .HasMany(j => j.Tags)
+                .WithMany(t => t.JournalEntries)
+                .UsingEntity(j => j.ToTable("journal_entry_tags"));
 
             base.OnModelCreating(modelBuilder);
         }

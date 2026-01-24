@@ -8,6 +8,16 @@
                 <h3 class="entry-title">@Entry.Title</h3>
             }
             <span class="date">@Entry.EntryDay.ToDateTime(TimeOnly.MinValue).ToString("dddd, MMMM dd, yyyy")</span>
+            
+            @if (Entry.Tags != null && Entry.Tags.Any())
+            {
+                <div class="entry-tags">
+                    @foreach (var tag in Entry.Tags)
+                    {
+                        <span class="tag-chip">@tag.Name</span>
+                    }
+                </div>
+            }
         </div>
         <div class="entry-actions">
             <button class="btn-edit" @onclick="OnEdit" title="Edit">
