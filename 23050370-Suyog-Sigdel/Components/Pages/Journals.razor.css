@@ -4,7 +4,7 @@
     padding: 0 1.5rem;
 }
 
-/* Journal Header with Back Button */
+/* Journal Header with Back Button and Export Button */
 .journal-header {
     display: flex;
     align-items: center;
@@ -37,6 +37,35 @@
     font-size: 1.1rem;
 }
 
+/* Export Button */
+.export-button {
+    margin-left: auto;
+    padding: 0.6rem 1.2rem;
+    border: 2px solid #27ae60;
+    border-radius: 8px;
+    background: white;
+    color: #27ae60;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.export-button:hover {
+    background: #27ae60;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+}
+
+.export-button i {
+    font-size: 1rem;
+}
+
 /* Light theme h1 */
 .light h1 {
     text-align: center;
@@ -64,6 +93,16 @@
 .dark .back-button:hover {
     background: #333;
     color: #64b5f6;
+}
+
+/* Dark theme export button */
+.dark .export-button {
+    background: #2a2a2a;
+}
+
+.dark .export-button:hover {
+    background: #27ae60;
+    color: white;
 }
 
 /* Input Section */
@@ -423,19 +462,29 @@
 
     .journal-header {
         margin-bottom: 1.2rem;
+        flex-wrap: wrap;
     }
 
     .journal-header h1 {
         font-size: 1.6rem;
+        flex: 1 1 100%;
+        order: 2;
     }
 
     .back-button {
         width: 38px;
         height: 38px;
+        order: 1;
     }
 
     .back-button i {
         font-size: 1rem;
+    }
+
+    .export-button {
+        order: 3;
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
     }
 
     .input-section {

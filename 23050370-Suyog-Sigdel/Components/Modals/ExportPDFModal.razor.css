@@ -1,0 +1,364 @@
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content.export-modal {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 90%;
+    font-family: system-ui, -apple-system, sans-serif;
+    overflow: hidden;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    background: #3498db;
+    color: white;
+    padding: 1.2rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-weight: 600;
+    font-size: 1.2rem;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.modal-header i {
+    font-size: 1.4rem;
+}
+
+.modal-close {
+    position: absolute;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.8rem;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.modal-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.modal-body {
+    padding: 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.modal-description {
+    color: #7f8c8d;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.date-inputs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.input-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.input-group label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #2c3e50;
+}
+
+.date-input {
+    padding: 0.7rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+}
+
+.date-input:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+.error-message {
+    background: #fee;
+    color: #e74c3c;
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+.export-progress {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+    gap: 1rem;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e0e0e0;
+    border-top-color: #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.export-progress p {
+    color: #7f8c8d;
+    margin: 0;
+}
+
+/* Success Content */
+.success-content {
+    text-align: center;
+}
+
+.success-icon {
+    font-size: 4rem;
+    color: #27ae60;
+    margin-bottom: 1rem;
+}
+
+.success-content h3 {
+    color: #2c3e50;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.success-message {
+    color: #7f8c8d;
+    margin-bottom: 1.5rem;
+}
+
+.instructions-box {
+    background: #e7f3ff;
+    border: 2px solid #3498db;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.instructions-box h4 {
+    color: #2c3e50;
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.instructions-box ol {
+    margin-left: 1.5rem;
+    color: #34495e;
+}
+
+.instructions-box li {
+    margin-bottom: 0.4rem;
+    font-size: 0.9rem;
+}
+
+kbd {
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 0.1rem 0.4rem;
+    font-family: monospace;
+    font-size: 0.85rem;
+}
+
+.file-location {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 0.8rem;
+    font-size: 0.85rem;
+    text-align: left;
+}
+
+.file-path {
+    color: #3498db;
+    font-family: monospace;
+    font-size: 0.8rem;
+    word-break: break-all;
+    display: block;
+    margin-top: 0.3rem;
+}
+
+.modal-actions {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    display: flex;
+    gap: 0.8rem;
+    flex-shrink: 0;
+}
+
+.export-btn,
+.cancel-btn,
+.open-btn,
+.done-btn {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.export-btn {
+    background: #27ae60;
+    color: white;
+}
+
+.export-btn:hover:not(:disabled) {
+    background: #1e874a;
+}
+
+.export-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.cancel-btn {
+    background: #95a5a6;
+    color: white;
+}
+
+.cancel-btn:hover:not(:disabled) {
+    background: #7f8c8d;
+}
+
+.cancel-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.open-btn {
+    background: #3498db;
+    color: white;
+}
+
+.open-btn:hover {
+    background: #2980b9;
+}
+
+.done-btn {
+    background: #95a5a6;
+    color: white;
+}
+
+.done-btn:hover {
+    background: #7f8c8d;
+}
+
+/* Dark Mode */
+.dark .modal-content.export-modal {
+    background: #2a2a2a;
+}
+
+.dark .modal-description {
+    color: #adb5bd;
+}
+
+.dark .input-group label {
+    color: #e0e0e0;
+}
+
+.dark .date-input {
+    background: #1a1a1a;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+.dark .date-input:focus {
+    border-color: #3498db;
+}
+
+.dark .success-content h3 {
+    color: #f8f9fa;
+}
+
+.dark .success-message {
+    color: #adb5bd;
+}
+
+.dark .instructions-box {
+    background: #1e3a4f;
+    border-color: #3498db;
+}
+
+.dark .instructions-box h4 {
+    color: #e0e0e0;
+}
+
+.dark .instructions-box ol {
+    color: #ccc;
+}
+
+.dark kbd {
+    background: #3a3a3a;
+    border-color: #555;
+    color: #e0e0e0;
+}
+
+.dark .file-location {
+    background: #1a1a1a;
+    border-color: #444;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .date-inputs {
+        flex-direction: column;
+    }
+
+    .modal-content.export-modal {
+        max-width: 95%;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+    }
+
+    .success-icon {
+        font-size: 3rem;
+    }
+}

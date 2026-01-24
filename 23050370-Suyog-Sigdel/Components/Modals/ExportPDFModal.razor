@@ -1,0 +1,197 @@
+@inject _23050370_Suyog_Sigdel.Services.PDFExportService.PDFExportService PDFExportService
+@inject IJSRuntime JS
+
+<div class="modal-backdrop" style="@(_show ? "display:flex" : "display:none")">
+    <div class="modal-content export-modal">
+        <div class="modal-header">
+            <i class="fas fa-file-pdf"></i>
+            <span>Export to PDF</span>
+            <button class="modal-close" @onclick="Close">×</button>
+        </div>
+        
+        <div class="modal-body">
+            @if (!exportSuccess)
+            {
+                <p class="modal-description">Select a date range to export your journal entries</p>
+                
+                <div class="date-inputs">
+                    <div class="input-group">
+                        <label>From Date</label>
+                        <input type="date" 
+                               class="date-input" 
+                               @bind="startDate" 
+                               max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>To Date</label>
+                        <input type="date" 
+                               class="date-input" 
+                               @bind="endDate" 
+                               max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                    </div>
+                </div>
+                
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="error-message">@errorMessage</div>
+                }
+                
+                @if (isExporting)
+                {
+                    <div class="export-progress">
+                        <div class="spinner"></div>
+                        <p>Generating export file...</p>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="success-content">
+                    <div class="success-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3>Export Successful!</h3>
+                    <p class="success-message">Your journal has been exported to an HTML file.</p>
+                    
+                    <div class="instructions-box">
+                        <h4><i class="fas fa-info-circle"></i> How to Save as PDF:</h4>
+                        <ol>
+                            <li>The file will open in your default browser</li>
+                            <li>Press <kbd>Cmd+P</kbd> (Mac) or <kbd>Ctrl+P</kbd> (Windows)</li>
+                            <li>Select "Save as PDF" as the destination</li>
+                            <li>Choose where to save and click Save</li>
+                        </ol>
+                    </div>
+                    
+                    <p class="file-location">
+                        <strong>File saved to:</strong><br/>
+                        <span class="file-path">@exportedFilePath</span>
+                    </p>
+                </div>
+            }
+        </div>
+        
+        <div class="modal-actions">
+            @if (!exportSuccess)
+            {
+                <button class="export-btn" @onclick="ExportToHtml" disabled="@isExporting">
+                    <i class="fas fa-download"></i>
+                    Export
+                </button>
+                <button class="cancel-btn" @onclick="Close" disabled="@isExporting">
+                    Cancel
+                </button>
+            }
+            else
+            {
+                <button class="open-btn" @onclick="OpenFile">
+                    <i class="fas fa-external-link-alt"></i>
+                    Open File
+                </button>
+                <button class="done-btn" @onclick="Close">
+                    Done
+                </button>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] 
+    public EventCallback OnClose { get; set; }
+
+    private bool _show = false;
+    private DateTime startDate = DateTime.Today.AddMonths(-1);
+    private DateTime endDate = DateTime.Today;
+    private string errorMessage = string.Empty;
+    private bool isExporting = false;
+    private bool exportSuccess = false;
+    private string exportedFilePath = string.Empty;
+
+    public void Show()
+    {
+        _show = true;
+        startDate = DateTime.Today.AddMonths(-1);
+        endDate = DateTime.Today;
+        errorMessage = string.Empty;
+        exportSuccess = false;
+        exportedFilePath = string.Empty;
+        StateHasChanged();
+    }
+
+    public void Hide()
+    {
+        _show = false;
+        StateHasChanged();
+    }
+
+    private async Task Close()
+    {
+        _show = false;
+        await OnClose.InvokeAsync();
+    }
+
+    private async Task ExportToHtml()
+    {
+        errorMessage = string.Empty;
+
+        // Validate dates
+        if (startDate > endDate)
+        {
+            errorMessage = "Start date must be before end date";
+            return;
+        }
+
+        if (endDate > DateTime.Today)
+        {
+            errorMessage = "End date cannot be in the future";
+            return;
+        }
+
+        isExporting = true;
+        StateHasChanged();
+
+        try
+        {
+            var startDateOnly = DateOnly.FromDateTime(startDate);
+            var endDateOnly = DateOnly.FromDateTime(endDate);
+
+            var htmlPath = await PDFExportService.ExportEntriesByDateRangeAsync(startDateOnly, endDateOnly);
+
+            if (string.IsNullOrEmpty(htmlPath))
+            {
+                errorMessage = "No entries found in the selected date range";
+                isExporting = false;
+                return;
+            }
+
+            exportedFilePath = htmlPath;
+            exportSuccess = true;
+            isExporting = false;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Export failed: {ex.Message}";
+            isExporting = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task OpenFile()
+    {
+        try
+        {
+            // Open the HTML file in default browser
+            await Launcher.OpenAsync(new OpenFileRequest
+            {
+                File = new ReadOnlyFile(exportedFilePath)
+            });
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Could not open file: {ex.Message}";
+        }
+    }
+}

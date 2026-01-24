@@ -45,6 +45,9 @@ public static class MauiProgram
         builder.Services.AddSingleton<SearchService>();
         builder.Services.AddScoped<StreakService>();
         builder.Services.AddScoped<AnalyticsService>();
+        builder.Services.AddScoped<_23050370_Suyog_Sigdel.Services.PDFExportService.PDFExportService>();
+
+
 
 
         
