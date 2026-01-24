@@ -1,183 +1,126 @@
-.dashboard-container {
-    max-width: 1400px;
-    margin: 2rem auto;
-    padding: 0 1.5rem;
+.dashboard {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
 }
 
-/* ==================== HEADER ==================== */
-.dashboard-header {
+/* Header with back button */
+.header {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid #e0e0e0;
+    gap: 15px;
+    margin-bottom: 30px;
 }
 
-.back-button {
+.back-btn {
     width: 40px;
     height: 40px;
     border-radius: 50%;
     border: none;
-    background: #f0f2f5;
-    color: #555;
+    background: #f0f0f0;
     cursor: pointer;
-    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
 }
 
-.back-button:hover {
-    background: #e4e6eb;
-    color: var(--primary-color, #3498db);
-    transform: translateX(-3px);
+.back-btn:hover {
+    background: #e0e0e0;
 }
 
-.back-button i {
-    font-size: 1.1rem;
+.back-btn i {
+    font-size: 18px;
 }
 
-.dashboard-header h1 {
-    font-size: 2rem;
-    color: #2c3e50;
+.dashboard h1 {
     margin: 0;
     flex: 1;
 }
 
-/* ==================== LOADING ==================== */
-.loading {
-    text-align: center;
-    padding: 3rem;
-    color: #7f8c8d;
-    font-size: 1.1rem;
-}
-
-/* ==================== CHARTS GRID ==================== */
-.charts-grid {
+/* Charts grid */
+.charts {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
+    gap: 20px;
 }
 
-.chart-card {
+.chart-box {
     background: white;
-    border: 2px solid #e8ecef;
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
 }
 
-.chart-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-    border-color: var(--primary-color, #3498db);
+.chart-box h3 {
+    margin: 0 0 15px 0;
+    font-size: 16px;
+    text-align: center;
 }
 
-.chart-card h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #2c3e50;
-    margin: 0 0 1.2rem 0;
-    padding-bottom: 0.8rem;
-    border-bottom: 2px solid #ecf0f1;
-}
-
-.chart-card.full-width {
-    grid-column: 1 / -1;
-}
-
-.chart-card canvas {
+.chart-box canvas {
+    flex: 1;
+    min-height: 250px;
     max-height: 300px;
 }
 
-/* ==================== DARK MODE ==================== */
-.dark .dashboard-header {
-    border-bottom-color: #3a3a3a;
+.chart-box.wide {
+    grid-column: 1 / -1;
 }
 
-.dark .dashboard-header h1 {
-    color: #f8f9fa;
+.chart-box.wide canvas {
+    min-height: 200px;
+    max-height: 250px;
 }
 
-.dark .back-button {
+/* Dark mode */
+.dark .back-btn {
     background: #2a2a2a;
     color: #ccc;
 }
 
-.dark .back-button:hover {
+.dark .back-btn:hover {
     background: #333;
-    color: #64b5f6;
 }
 
-.dark .loading {
-    color: #adb5bd;
-}
-
-.dark .chart-card {
+.dark .chart-box {
     background: #2a2a2a;
-    border-color: #3a3a3a;
+    border-color: #444;
 }
 
-.dark .chart-card:hover {
-    border-color: var(--primary-color, #3498db);
+.dark .dashboard h1 {
+    color: #fff;
 }
 
-.dark .chart-card h3 {
-    color: #e0e0e0;
-    border-bottom-color: #3a3a3a;
+.dark .chart-box h3 {
+    color: #fff;
 }
 
-/* ==================== RESPONSIVE ==================== */
-@media (max-width: 1024px) {
-    .charts-grid {
-        grid-template-columns: 1fr;
+/* Mobile */
+@media (max-width: 768px) {
+    .dashboard {
+        padding: 15px;
     }
 
-    .chart-card.full-width {
+    .header {
+        margin-bottom: 20px;
+    }
+
+    .dashboard h1 {
+        font-size: 24px;
+    }
+
+    .charts {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .chart-box.wide {
         grid-column: 1;
     }
-}
 
-@media (max-width: 768px) {
-    .dashboard-container {
-        padding: 0 1rem;
-        margin: 1rem auto;
-    }
-
-    .dashboard-header {
-        margin-bottom: 1.5rem;
-    }
-
-    .dashboard-header h1 {
-        font-size: 1.6rem;
-    }
-
-    .back-button {
-        width: 38px;
-        height: 38px;
-    }
-
-    .back-button i {
-        font-size: 1rem;
-    }
-
-    .charts-grid {
-        gap: 1rem;
-    }
-
-    .chart-card {
-        padding: 1.2rem;
-    }
-
-    .chart-card h3 {
-        font-size: 1rem;
-        margin-bottom: 1rem;
-    }
-
-    .chart-card canvas {
-        max-height: 250px;
+    .chart-box canvas {
+        min-height: 200px;
     }
 }

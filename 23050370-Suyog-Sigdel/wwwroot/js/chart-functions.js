@@ -1,299 +1,128 @@
-// Store chart instances
-let moodChartInstance = null;
-let tagsChartInstance = null;
-let frequentMoodsChartInstance = null;
-let tagBreakdownChartInstance = null;
-let wordCountChartInstance = null;
+// Store charts
+let charts = {};
 
 window.createCharts = function (
     moodLabels, moodData,
     tagLabels, tagData,
-    frequentMoodLabels, frequentMoodData,
-    tagBreakdownLabels, tagBreakdownData,
-    dateLabels, wordCounts
+    freqLabels, freqData,
+    pieLabels, pieData,
+    dates, words
 ) {
-    console.log("🎨 Creating all charts...");
+    // Destroy old charts
+    Object.values(charts).forEach(chart => chart && chart.destroy());
+    charts = {};
 
-    // Destroy existing charts
-    if (moodChartInstance) moodChartInstance.destroy();
-    if (tagsChartInstance) tagsChartInstance.destroy();
-    if (frequentMoodsChartInstance) frequentMoodsChartInstance.destroy();
-    if (tagBreakdownChartInstance) tagBreakdownChartInstance.destroy();
-    if (wordCountChartInstance) wordCountChartInstance.destroy();
-
-    // Common colors
     const colors = ['#3498db', '#e74c3c', '#f39c12', '#27ae60', '#9b59b6', '#1abc9c', '#e67e22', '#16a085'];
 
-    // Chart defaults for dark mode
-    Chart.defaults.color = '#e0e0e0';
-    Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
-
-    // 1. Primary Mood Distribution (Doughnut Chart)
-    const moodCtx = document.getElementById('moodChart');
-    if (moodCtx) {
-        moodChartInstance = new Chart(moodCtx, {
+    // 1. Primary Moods
+    const ctx1 = document.getElementById('moodChart');
+    if (ctx1) {
+        charts.mood = new Chart(ctx1, {
             type: 'doughnut',
             data: {
                 labels: moodLabels,
                 datasets: [{
                     data: moodData,
-                    backgroundColor: colors,
-                    borderColor: '#2a2a2a',
-                    borderWidth: 3
+                    backgroundColor: colors
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
                 plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            color: '#e0e0e0',
-                            padding: 15,
-                            font: { size: 13 }
-                        }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return context.label + ': ' + context.parsed + ' entries';
-                            }
-                        }
-                    }
+                    legend: { position: 'bottom' }
                 }
             }
         });
-        console.log("✅ Primary mood chart created");
-    } else {
-        console.log("❌ ERROR: moodChart canvas not found!");
     }
 
-    // 2. Top 5 Tags (Bar Chart)
-    const tagsCtx = document.getElementById('tagsChart');
-    if (tagsCtx) {
-        tagsChartInstance = new Chart(tagsCtx, {
+    // 2. Top Tags
+    const ctx2 = document.getElementById('tagsChart');
+    if (ctx2) {
+        charts.tags = new Chart(ctx2, {
             type: 'bar',
             data: {
                 labels: tagLabels,
                 datasets: [{
                     label: 'Count',
                     data: tagData,
-                    backgroundColor: '#3498db',
-                    borderColor: '#2980b9',
-                    borderWidth: 2,
-                    borderRadius: 5
+                    backgroundColor: '#3498db'
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            color: '#e0e0e0',
-                            stepSize: 1
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        }
-                    },
-                    x: {
-                        ticks: {
-                            color: '#e0e0e0'
-                        },
-                        grid: {
-                            display: false
-                        }
-                    }
-                }
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
             }
         });
-        console.log("✅ Tags bar chart created");
-    } else {
-        console.log("❌ ERROR: tagsChart canvas not found!");
     }
 
-    // 3. All Moods Frequency (Bar Chart - Horizontal)
-    const frequentMoodsCtx = document.getElementById('frequentMoodsChart');
-    if (frequentMoodsCtx) {
-        frequentMoodsChartInstance = new Chart(frequentMoodsCtx, {
+    // 3. All Moods
+    const ctx3 = document.getElementById('frequentMoodsChart');
+    if (ctx3) {
+        charts.freq = new Chart(ctx3, {
             type: 'bar',
             data: {
-                labels: frequentMoodLabels,
+                labels: freqLabels,
                 datasets: [{
-                    label: 'Frequency',
-                    data: frequentMoodData,
-                    backgroundColor: '#9b59b6',
-                    borderColor: '#8e44ad',
-                    borderWidth: 2,
-                    borderRadius: 5
+                    label: 'Count',
+                    data: freqData,
+                    backgroundColor: '#9b59b6'
                 }]
             },
             options: {
-                indexAxis: 'y', // Horizontal bars
+                indexAxis: 'y',
                 responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    x: {
-                        beginAtZero: true,
-                        ticks: {
-                            color: '#e0e0e0',
-                            stepSize: 1
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        }
-                    },
-                    y: {
-                        ticks: {
-                            color: '#e0e0e0'
-                        },
-                        grid: {
-                            display: false
-                        }
-                    }
-                }
+                plugins: { legend: { display: false } },
+                scales: { x: { beginAtZero: true } }
             }
         });
-        console.log("✅ Frequent moods chart created");
-    } else {
-        console.log("❌ ERROR: frequentMoodsChart canvas not found!");
     }
 
-    // 4. Tag Distribution (Pie Chart)
-    const tagBreakdownCtx = document.getElementById('tagBreakdownChart');
-    if (tagBreakdownCtx) {
-        tagBreakdownChartInstance = new Chart(tagBreakdownCtx, {
+    // 4. Tag Distribution
+    const ctx4 = document.getElementById('tagBreakdownChart');
+    if (ctx4) {
+        charts.pie = new Chart(ctx4, {
             type: 'pie',
             data: {
-                labels: tagBreakdownLabels,
+                labels: pieLabels,
                 datasets: [{
-                    data: tagBreakdownData,
-                    backgroundColor: colors,
-                    borderColor: '#2a2a2a',
-                    borderWidth: 2
+                    data: pieData,
+                    backgroundColor: colors
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
                 plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            color: '#e0e0e0',
-                            padding: 12,
-                            font: { size: 12 }
-                        }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const percentage = ((context.parsed / total) * 100).toFixed(1);
-                                return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
-                            }
-                        }
-                    }
+                    legend: { position: 'bottom' }
                 }
             }
         });
-        console.log("✅ Tag breakdown chart created");
-    } else {
-        console.log("❌ ERROR: tagBreakdownChart canvas not found!");
     }
 
-    // 5. Word Count Trend (Line Chart)
-    const wordCountCtx = document.getElementById('wordCountChart');
-    if (wordCountCtx) {
-        wordCountChartInstance = new Chart(wordCountCtx, {
+    // 5. Word Count
+    const ctx5 = document.getElementById('wordCountChart');
+    if (ctx5) {
+        charts.words = new Chart(ctx5, {
             type: 'line',
             data: {
-                labels: dateLabels,
+                labels: dates,
                 datasets: [{
                     label: 'Words',
-                    data: wordCounts,
+                    data: words,
                     borderColor: '#27ae60',
                     backgroundColor: 'rgba(39, 174, 96, 0.2)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: '#27ae60',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
-                    pointRadius: 5,
-                    pointHoverRadius: 7
+                    fill: true
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        display: true,
-                        labels: {
-                            color: '#e0e0e0',
-                            font: { size: 13 }
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            color: '#e0e0e0'
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        }
-                    },
-                    x: {
-                        ticks: {
-                            color: '#e0e0e0'
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.05)'
-                        }
-                    }
-                }
+                scales: { y: { beginAtZero: true } }
             }
         });
-        console.log("✅ Word count chart created");
-    } else {
-        console.log("❌ ERROR: wordCountChart canvas not found!");
     }
-
-    console.log("✅ All 5 charts created successfully!");
 };
 
 window.destroyCharts = function () {
-    if (moodChartInstance) {
-        moodChartInstance.destroy();
-        moodChartInstance = null;
-    }
-    if (tagsChartInstance) {
-        tagsChartInstance.destroy();
-        tagsChartInstance = null;
-    }
-    if (frequentMoodsChartInstance) {
-        frequentMoodsChartInstance.destroy();
-        frequentMoodsChartInstance = null;
-    }
-    if (tagBreakdownChartInstance) {
-        tagBreakdownChartInstance.destroy();
-        tagBreakdownChartInstance = null;
-    }
-    if (wordCountChartInstance) {
-        wordCountChartInstance.destroy();
-        wordCountChartInstance = null;
-    }
-    console.log("🗑️ All charts destroyed");
+    Object.values(charts).forEach(chart => chart && chart.destroy());
+    charts = {};
 };
