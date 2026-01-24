@@ -1,11 +1,13 @@
 @inject _23050370_Suyog_Sigdel.Services.PDFExportService.PDFExportService PDFExportService
-@inject IJSRuntime JS
+@inject _23050370_Suyog_Sigdel.Services.ThemeService ThemeService
 
 <div class="modal-backdrop" style="@(_show ? "display:flex" : "display:none")">
-    <div class="modal-content export-modal">
+    <div class="modal-content export-modal @ThemeService.GetThemeClass()">
         <div class="modal-header">
-            <i class="fas fa-file-pdf"></i>
-            <span>Export to PDF</span>
+            <div class="header-content">
+                <i class="fas fa-file-pdf"></i>
+                <span>Export to PDF</span>
+            </div>
             <button class="modal-close" @onclick="Close">×</button>
         </div>
         
@@ -41,7 +43,7 @@
                 {
                     <div class="export-progress">
                         <div class="spinner"></div>
-                        <p>Generating export file...</p>
+                        <p>Generating PDF...</p>
                     </div>
                 }
             }
@@ -52,22 +54,15 @@
                         <i class="fas fa-check-circle"></i>
                     </div>
                     <h3>Export Successful!</h3>
-                    <p class="success-message">Your journal has been exported to an HTML file.</p>
+                    <p class="success-message">Your journal has been exported to PDF successfully.</p>
                     
-                    <div class="instructions-box">
-                        <h4><i class="fas fa-info-circle"></i> How to Save as PDF:</h4>
-                        <ol>
-                            <li>The file will open in your default browser</li>
-                            <li>Press <kbd>Cmd+P</kbd> (Mac) or <kbd>Ctrl+P</kbd> (Windows)</li>
-                            <li>Select "Save as PDF" as the destination</li>
-                            <li>Choose where to save and click Save</li>
-                        </ol>
+                    <div class="file-info">
+                        <i class="fas fa-file-pdf file-icon"></i>
+                        <div class="file-details">
+                            <strong class="file-name">@Path.GetFileName(exportedFilePath)</strong>
+                            <div class="file-location-text">@exportedFilePath</div>
+                        </div>
                     </div>
-                    
-                    <p class="file-location">
-                        <strong>File saved to:</strong><br/>
-                        <span class="file-path">@exportedFilePath</span>
-                    </p>
                 </div>
             }
         </div>
@@ -75,7 +70,7 @@
         <div class="modal-actions">
             @if (!exportSuccess)
             {
-                <button class="export-btn" @onclick="ExportToHtml" disabled="@isExporting">
+                <button class="export-btn" @onclick="ExportToPdf" disabled="@isExporting">
                     <i class="fas fa-download"></i>
                     Export
                 </button>
@@ -87,7 +82,7 @@
             {
                 <button class="open-btn" @onclick="OpenFile">
                     <i class="fas fa-external-link-alt"></i>
-                    Open File
+                    Open PDF
                 </button>
                 <button class="done-btn" @onclick="Close">
                     Done
@@ -132,7 +127,7 @@
         await OnClose.InvokeAsync();
     }
 
-    private async Task ExportToHtml()
+    private async Task ExportToPdf()
     {
         errorMessage = string.Empty;
 
@@ -157,16 +152,16 @@
             var startDateOnly = DateOnly.FromDateTime(startDate);
             var endDateOnly = DateOnly.FromDateTime(endDate);
 
-            var htmlPath = await PDFExportService.ExportEntriesByDateRangeAsync(startDateOnly, endDateOnly);
+            var pdfPath = await PDFExportService.ExportEntriesByDateRangeAsync(startDateOnly, endDateOnly);
 
-            if (string.IsNullOrEmpty(htmlPath))
+            if (string.IsNullOrEmpty(pdfPath))
             {
                 errorMessage = "No entries found in the selected date range";
                 isExporting = false;
                 return;
             }
 
-            exportedFilePath = htmlPath;
+            exportedFilePath = pdfPath;
             exportSuccess = true;
             isExporting = false;
             StateHasChanged();
@@ -183,7 +178,7 @@
     {
         try
         {
-            // Open the HTML file in default browser
+            // Open the PDF file directly
             await Launcher.OpenAsync(new OpenFileRequest
             {
                 File = new ReadOnlyFile(exportedFilePath)
@@ -191,7 +186,8 @@
         }
         catch (Exception ex)
         {
-            errorMessage = $"Could not open file: {ex.Message}";
+            errorMessage = $"Could not open PDF: {ex.Message}";
+            StateHasChanged();
         }
     }
 }
