@@ -34,7 +34,7 @@
 
 .btn-start {
     padding: 0.75rem 2rem;
-    background: #3498db;
+    background: var(--primary-color, #3498db);
     color: white;
     border: none;
     border-radius: 8px;
@@ -45,7 +45,7 @@
 }
 
 .btn-start:hover {
-    background: #2980b9;
+    background: var(--primary-hover, #2980b9);
     transform: translateY(-2px);
 }
 
@@ -68,8 +68,8 @@
 .btn-view-all {
     padding: 0.5rem 1rem;
     background: white;
-    color: #3498db;
-    border: 2px solid #3498db;
+    color: var(--primary-color, #3498db);
+    border: 2px solid var(--primary-color, #3498db);
     border-radius: 6px;
     font-weight: 600;
     cursor: pointer;
@@ -77,7 +77,7 @@
 }
 
 .btn-view-all:hover {
-    background: #3498db;
+    background: var(--primary-color, #3498db);
     color: white;
 }
 

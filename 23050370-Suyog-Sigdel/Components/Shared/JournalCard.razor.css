@@ -7,7 +7,7 @@
 }
 
 .journal-card:hover {
-    border-color: #3498db;
+    border-color: var(--primary-color, #3498db);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
@@ -107,7 +107,7 @@
 }
 
 .dark .journal-card:hover {
-    border-color: #3498db;
+    border-color: var(--primary-color, #3498db);
 }
 
 .dark .entry-title {

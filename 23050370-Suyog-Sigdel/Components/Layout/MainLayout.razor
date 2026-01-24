@@ -5,7 +5,7 @@
 @inject ThemeService ThemeService
 @inject NavigationManager Navigation
 
-<div class="main-layout @ThemeClass">
+<div class="main-layout @ThemeService.GetThemeClass()">
     @if (IsLoginPage)
     {
         @* Login page doesn't need navbar or auth guard *@
@@ -25,7 +25,6 @@
 </div>
 
 @code {
-    private string ThemeClass => ThemeService.IsDark ? "dark" : "light";
     private bool IsLoginPage => Navigation.Uri.Contains("/login");
 
     protected override void OnInitialized()

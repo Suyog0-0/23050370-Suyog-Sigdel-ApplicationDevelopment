@@ -9,7 +9,7 @@
 }
 
 .rte-wrapper:focus-within {
-    border-color: #3498db;
+    border-color: var(--primary-color, #3498db);
     box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
 }
 
@@ -40,9 +40,9 @@
 }
 
 .toolbar-btn:hover {
-    background: #e7f3ff;
-    border-color: #3498db;
-    color: #3498db;
+    background: var(--primary-light, #e7f3ff);
+    border-color: var(--primary-color, #3498db);
+    color: var(--primary-color, #3498db);
     transform: translateY(-1px);
 }
 
@@ -90,7 +90,7 @@
 }
 
 .dark .rte-wrapper:focus-within {
-    border-color: #3498db;
+    border-color: var(--primary-color, #3498db);
     box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
 }
 
@@ -107,7 +107,7 @@
 
 .dark .toolbar-btn:hover {
     background: #1e3a5f;
-    border-color: #3498db;
+    border-color: var(--primary-color, #3498db);
     color: #5dade2;
 }
 
@@ -181,13 +181,13 @@
 
 /* Link Styles */
 .rte-editor a {
-    color: #3498db;
+    color: var(--primary-color, #3498db);
     text-decoration: underline;
     cursor: pointer;
 }
 
 .rte-editor a:hover {
-    color: #2980b9;
+    color: var(--primary-hover, #2980b9);
 }
 
 /* Dark mode headings */

@@ -29,7 +29,7 @@
 
 .back-button:hover {
     background: #e4e6eb;
-    color: #3498db;
+    color: var(--primary-color, #3498db);
     transform: translateX(-3px);
 }
 
@@ -97,7 +97,7 @@
 
 .title-input:focus {
     outline: none;
-    border-color: #3498db;
+    border-color: var(--primary-color, #3498db);
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
@@ -112,7 +112,7 @@
 }
 
 .dark .title-input:focus {
-    border-color: #3498db;
+    border-color: var(--primary-color, #3498db);
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
 }
 
@@ -127,7 +127,7 @@
     margin-top: 1rem;
 }
 
-/* Add Today Button - Blue */
+/* Add Today Button */
 .btn-add {
     flex: 1;
     padding: 0.75rem 1.5rem;
@@ -138,11 +138,11 @@
     font-size: 0.95rem;
     cursor: pointer;
     transition: all 0.2s ease;
-    background: #3498db;
+    background: var(--primary-color, #3498db);
 }
 
 .btn-add:hover {
-    background: #217dbb;
+    background: var(--primary-hover, #217dbb);
 }
 
 /* Update Today Button - Green */
@@ -178,8 +178,8 @@
 }
 
 .search-info {
-    background: #e8f4f8;
-    color: #2980b9;
+    background: var(--primary-light, #e8f4f8);
+    color: var(--primary-hover, #2980b9);
     border-radius: 8px;
     padding: 0.8rem;
     margin-bottom: 1.5rem;

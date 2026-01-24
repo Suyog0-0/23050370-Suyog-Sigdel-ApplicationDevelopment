@@ -1,6 +1,7 @@
 @page "/settings"
 @inject NavigationManager Navigation
 @inject _23050370_Suyog_Sigdel.Services.SecurityService SecurityService
+@inject _23050370_Suyog_Sigdel.Services.ThemeService ThemeService
 @using _23050370_Suyog_Sigdel.Components.Modals
 
 <div class="settings-container">
@@ -64,12 +65,40 @@
             <h2>Appearance</h2>
             <div class="setting-item">
                 <div class="setting-info">
-                    <span class="setting-label">Theme</span>
-                    <span class="setting-description">Toggle between light and dark mode</span>
+                    <span class="setting-label">Light/Dark Mode</span>
+                    <span class="setting-description">Toggle between light and dark mode using the navbar button</span>
                 </div>
                 <div class="setting-control">
-                    <span class="theme-note">Use the theme toggle in the navbar</span>
+                    <span class="theme-note">Current: @(ThemeService.IsDarkMode ? "Dark" : "Light")</span>
                 </div>
+            </div>
+            
+            <div class="setting-item">
+                <div class="setting-info">
+                    <span class="setting-label">Color Theme</span>
+                    <span class="setting-description">Choose your preferred color theme</span>
+                </div>
+            </div>
+            
+            <!-- Color Theme Options -->
+            <div class="color-theme-options">
+                <button class="color-theme-btn @(ThemeService.CurrentColorTheme == "blue" ? "active" : "")" 
+                        @onclick='() => ChangeColorTheme("blue")'>
+                    <div class="color-preview blue"></div>
+                    <span>Blue</span>
+                </button>
+                
+                <button class="color-theme-btn @(ThemeService.CurrentColorTheme == "soft-gray" ? "active" : "")" 
+                        @onclick='() => ChangeColorTheme("soft-gray")'>
+                    <div class="color-preview soft-gray"></div>
+                    <span>Soft Gray</span>
+                </button>
+                
+                <button class="color-theme-btn @(ThemeService.CurrentColorTheme == "dark-purple" ? "active" : "")" 
+                        @onclick='() => ChangeColorTheme("dark-purple")'>
+                    <div class="color-preview dark-purple"></div>
+                    <span>Dark Purple</span>
+                </button>
             </div>
         </div>
 
@@ -213,5 +242,11 @@
                 isPinEnabled = false;
             }
         }
+    }
+
+    // Change color theme
+    private void ChangeColorTheme(string colorTheme)
+    {
+        ThemeService.SetColorTheme(colorTheme);
     }
 }

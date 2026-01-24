@@ -68,7 +68,7 @@
 .navbar.light .search-input:focus {
     outline: none;
     background: white;
-    border-color: #3498db;
+    border-color: var(--primary-color, #3498db);
 }
 
 .navbar.dark .search-input {
@@ -80,7 +80,7 @@
 .navbar.dark .search-input:focus {
     outline: none;
     background: #2a2a2a;
-    border-color: #3498db;
+    border-color: var(--primary-color, #3498db);
 }
 
 .navbar.dark .search-input::placeholder {
@@ -141,7 +141,7 @@
 
 .navbar.light .navbar-link.active {
     color: white;
-    background: #3498db;
+    background: var(--primary-color, #3498db);
     font-weight: 600;
 }
 
@@ -157,7 +157,7 @@
 
 .navbar.dark .navbar-link.active {
     color: white;
-    background: #3498db;
+    background: var(--primary-color, #3498db);
     font-weight: 600;
 }
 
@@ -183,12 +183,12 @@
 
 .navbar.light .settings-icon-link:hover {
     background: #e4e6eb;
-    color: #3498db;
+    color: var(--primary-color, #3498db);
     transform: rotate(45deg);
 }
 
 .navbar.light .settings-icon-link.active {
-    background: #3498db;
+    background: var(--primary-color, #3498db);
     color: white;
 }
 
@@ -204,7 +204,7 @@
 }
 
 .navbar.dark .settings-icon-link.active {
-    background: #3498db;
+    background: var(--primary-color, #3498db);
     color: white;
 }
 

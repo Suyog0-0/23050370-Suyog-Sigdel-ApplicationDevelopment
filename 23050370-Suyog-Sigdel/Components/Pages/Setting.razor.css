@@ -29,7 +29,7 @@
 
 .back-button:hover {
     background: #e4e6eb;
-    color: #3498db;
+    color: var(--primary-color, #3498db);
     transform: translateX(-3px);
 }
 
@@ -106,6 +106,67 @@
     font-style: italic;
 }
 
+/* ==================== COLOR THEME OPTIONS ==================== */
+.color-theme-options {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 0;
+    flex-wrap: wrap;
+}
+
+.color-theme-btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.color-theme-btn:hover {
+    border-color: #3498db;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.color-theme-btn.active {
+    border-color: var(--primary-color, #3498db);
+    border-width: 3px;
+    background: var(--primary-light, #e7f3ff);
+}
+
+.color-theme-btn span {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.color-preview {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.color-preview.blue {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+.color-preview.soft-gray {
+    background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+}
+
+.color-preview.dark-purple {
+    background: linear-gradient(135deg, #8e44ad, #71368a);
+}
+
 /* Dark theme support */
 .dark .settings-header {
     border-bottom-color: #3a3a3a;
@@ -151,6 +212,23 @@
     color: #6c757d;
 }
 
+.dark .color-theme-btn {
+    background: #2a2a2a;
+    border-color: #444;
+}
+
+.dark .color-theme-btn:hover {
+    border-color: #3498db;
+}
+
+.dark .color-theme-btn.active {
+    background: #1e3a4f;
+}
+
+.dark .color-theme-btn span {
+    color: #e0e0e0;
+}
+
 /* Mobile responsive */
 @media (max-width: 768px) {
     .settings-container {
@@ -181,6 +259,21 @@
 
     .setting-description {
         font-size: 0.85rem;
+    }
+
+    .color-theme-options {
+        flex-direction: column;
+    }
+
+    .color-theme-btn {
+        flex-direction: row;
+        justify-content: flex-start;
+        padding: 0.8rem 1rem;
+    }
+
+    .color-preview {
+        width: 40px;
+        height: 40px;
     }
 }
 
@@ -234,7 +327,7 @@
 
 .pin-modal-input:focus {
     outline: none;
-    border-color: #3498db;
+    border-color: var(--primary-color, #3498db);
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
@@ -313,12 +406,12 @@
 }
 
 .btn-change-pin {
-    background: #3498db;
+    background: var(--primary-color, #3498db);
     color: white;
 }
 
 .btn-change-pin:hover {
-    background: #2980b9;
+    background: var(--primary-hover, #2980b9);
 }
 
 /* Dark Mode for PIN Modal */
@@ -341,7 +434,6 @@
 }
 
 .dark .pin-modal-input:focus {
-    border-color: #3498db;
+    border-color: var(--primary-color, #3498db);
     background: #252525;
 }
-

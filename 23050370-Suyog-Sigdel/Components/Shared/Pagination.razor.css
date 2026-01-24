@@ -26,14 +26,14 @@
 
 .page-btn:hover:not(:disabled) {
     background: #f0f2f5;
-    border-color: #3498db;
-    color: #3498db;
+    border-color: var(--primary-color, #3498db);
+    color: var(--primary-color, #3498db);
 }
 
 .page-btn.active {
-    background: #3498db;
+    background: var(--primary-color, #3498db);
     color: white;
-    border-color: #3498db;
+    border-color: var(--primary-color, #3498db);
     font-weight: 600;
 }
 
