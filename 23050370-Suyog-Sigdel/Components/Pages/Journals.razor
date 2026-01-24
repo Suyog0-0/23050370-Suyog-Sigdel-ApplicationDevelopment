@@ -5,6 +5,7 @@
 @inject NavigationManager Navigation
 @using _23050370_Suyog_Sigdel.Components.Modals
 @using _23050370_Suyog_Sigdel.Components.Shared
+@using _23050370_Suyog_Sigdel.Helpers
 @implements IDisposable
 
 <div class="journal-container">
@@ -21,6 +22,47 @@
             class="title-input" 
             placeholder="Enter title (optional)..." 
             @bind="titleText" />
+        
+        <!-- Compact Mood Selection -->
+        <div class="mood-section-compact">
+            <div class="mood-row">
+                <label class="mood-label-compact">
+                    <i class="fas fa-smile"></i> Mood <span class="required">*</span>
+                </label>
+                <select class="mood-dropdown-compact primary" @bind="primaryMood">
+                    <option value="">Select mood...</option>
+                    @foreach (var mood in MoodHelper.AvailableMoods)
+                    {
+                        <option value="@mood.Name">
+                            @mood.Name
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="mood-row secondary-row">
+                <label class="mood-label-compact secondary-label">
+                    <i class="fas fa-plus-circle"></i> Also feeling
+                </label>
+                <div class="secondary-moods-compact">
+                    <select class="mood-dropdown-compact" @bind="secondaryMood1">
+                        <option value="">Optional...</option>
+                        @foreach (var mood in MoodHelper.AvailableMoods)
+                        {
+                            <option value="@mood.Name">@mood.Name</option>
+                        }
+                    </select>
+                    
+                    <select class="mood-dropdown-compact" @bind="secondaryMood2">
+                        <option value="">Optional...</option>
+                        @foreach (var mood in MoodHelper.AvailableMoods)
+                        {
+                            <option value="@mood.Name">@mood.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
         
         <!-- Tag Input -->
         <div class="tag-input-container">
@@ -114,6 +156,11 @@
     private string errorMessage = string.Empty;
     private string titleText = string.Empty;
 
+    // Mood fields
+    private string primaryMood = string.Empty;
+    private string? secondaryMood1;
+    private string? secondaryMood2;
+
     // Tag-related fields
     private string currentTagInput = string.Empty;
     private List<string> selectedTags = new();
@@ -136,7 +183,10 @@
                 j.Title.ToLower().Contains(searchTerm) ||
                 j.Content.ToLower().Contains(searchTerm) ||
                 j.EntryDay.ToString().Contains(searchTerm) ||
-                j.Tags.Any(t => t.Name.ToLower().Contains(searchTerm))
+                j.Tags.Any(t => t.Name.ToLower().Contains(searchTerm)) ||
+                j.PrimaryMood.ToLower().Contains(searchTerm) ||
+                (j.SecondaryMood1?.ToLower().Contains(searchTerm) ?? false) ||
+                (j.SecondaryMood2?.ToLower().Contains(searchTerm) ?? false)
             ).ToList();
         }
     }
@@ -217,6 +267,9 @@
     {
         editingEntryId = entry.Id;
         titleText = entry.Title;
+        primaryMood = entry.PrimaryMood;
+        secondaryMood1 = entry.SecondaryMood1;
+        secondaryMood2 = entry.SecondaryMood2;
         selectedTags = entry.Tags.Select(t => t.Name).ToList();
         await richTextEditor!.LoadHTMLContent(entry.Content);
         StateHasChanged();
@@ -235,13 +288,24 @@
             return;
         }
 
+        if (string.IsNullOrWhiteSpace(primaryMood))
+        {
+            errorMessage = "Please select a primary mood.";
+            errorModal?.Show();
+            return;
+        }
+
         // Add any pending tag
         AddCurrentTag();
 
-        await JournalService.UpdateEntryByIdAsync(editingEntryId.Value, titleText, htmlContent, selectedTags);
+        await JournalService.UpdateEntryByIdAsync(editingEntryId.Value, titleText, htmlContent, selectedTags,
+                                                  primaryMood, secondaryMood1, secondaryMood2);
 
         await richTextEditor.Clear();
         titleText = string.Empty;
+        primaryMood = string.Empty;
+        secondaryMood1 = null;
+        secondaryMood2 = null;
         selectedTags.Clear();
         editingEntryId = null;
         await LoadJournals();
@@ -251,6 +315,9 @@
     {
         editingEntryId = null;
         titleText = string.Empty;
+        primaryMood = string.Empty;
+        secondaryMood1 = null;
+        secondaryMood2 = null;
         selectedTags.Clear();
         await richTextEditor!.Clear();
         StateHasChanged();
@@ -263,6 +330,13 @@
         if (string.IsNullOrWhiteSpace(htmlContent) || htmlContent == "<br>" || htmlContent == "<div><br></div>")
         {
             errorMessage = "Please write something before adding an entry.";
+            errorModal?.Show();
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(primaryMood))
+        {
+            errorMessage = "Please select a primary mood.";
             errorModal?.Show();
             return;
         }
@@ -280,9 +354,13 @@
         // Add any pending tag
         AddCurrentTag();
 
-        await JournalService.AddEntryAsync(titleText, htmlContent, selectedTags);
+        await JournalService.AddEntryAsync(titleText, htmlContent, selectedTags, 
+                                          primaryMood, secondaryMood1, secondaryMood2);
         await richTextEditor.Clear();
         titleText = string.Empty;
+        primaryMood = string.Empty;
+        secondaryMood1 = null;
+        secondaryMood2 = null;
         selectedTags.Clear();
         await LoadJournals();
     }
@@ -298,12 +376,23 @@
             return;
         }
 
+        if (string.IsNullOrWhiteSpace(primaryMood))
+        {
+            errorMessage = "Please select a primary mood.";
+            errorModal?.Show();
+            return;
+        }
+
         // Add any pending tag
         AddCurrentTag();
 
-        await JournalService.UpdateEntryAsync(titleText, htmlContent, selectedTags);
+        await JournalService.UpdateEntryAsync(titleText, htmlContent, selectedTags,
+                                             primaryMood, secondaryMood1, secondaryMood2);
         await richTextEditor.Clear();
         titleText = string.Empty;
+        primaryMood = string.Empty;
+        secondaryMood1 = null;
+        secondaryMood2 = null;
         selectedTags.Clear();
         await LoadJournals();
     }

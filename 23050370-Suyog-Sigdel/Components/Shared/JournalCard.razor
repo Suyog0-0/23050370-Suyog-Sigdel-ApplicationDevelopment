@@ -1,4 +1,5 @@
 @using _23050370_Suyog_Sigdel.Models
+@using _23050370_Suyog_Sigdel.Helpers
 
 <div class="journal-card @(IsEditing ? "editing" : "")">
     <div class="entry-header">
@@ -9,12 +10,45 @@
             }
             <span class="date">@Entry.EntryDay.ToDateTime(TimeOnly.MinValue).ToString("dddd, MMMM dd, yyyy")</span>
             
+            <!-- Display Moods with Icons -->
+            @if (!string.IsNullOrEmpty(Entry.PrimaryMood))
+            {
+                <div class="entry-moods">
+                    @{
+                        var primaryDisplay = MoodHelper.GetMoodDisplay(Entry.PrimaryMood);
+                    }
+                    <span class="mood-chip primary" style="color: @primaryDisplay.Color">
+                        <i class="fas @primaryDisplay.Icon"></i>
+                        <span>@primaryDisplay.Name</span>
+                    </span>
+                    
+                    @if (!string.IsNullOrEmpty(Entry.SecondaryMood1))
+                    {
+                        var secondary1Display = MoodHelper.GetMoodDisplay(Entry.SecondaryMood1);
+                        <span class="mood-chip secondary" style="color: @secondary1Display.Color">
+                            <i class="fas @secondary1Display.Icon"></i>
+                            <span>@secondary1Display.Name</span>
+                        </span>
+                    }
+                    
+                    @if (!string.IsNullOrEmpty(Entry.SecondaryMood2))
+                    {
+                        var secondary2Display = MoodHelper.GetMoodDisplay(Entry.SecondaryMood2);
+                        <span class="mood-chip secondary" style="color: @secondary2Display.Color">
+                            <i class="fas @secondary2Display.Icon"></i>
+                            <span>@secondary2Display.Name</span>
+                        </span>
+                    }
+                </div>
+            }
+            
+            <!-- Simple Tags Display -->
             @if (Entry.Tags != null && Entry.Tags.Any())
             {
                 <div class="entry-tags">
                     @foreach (var tag in Entry.Tags)
                     {
-                        <span class="tag-chip">@tag.Name</span>
+                        <span class="tag-simple">@tag.Name</span>
                     }
                 </div>
             }

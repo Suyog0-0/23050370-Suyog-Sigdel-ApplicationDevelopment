@@ -23,6 +23,16 @@ public class JournalEntryModel
     [Column("entry_day")]
     public DateOnly EntryDay { get; set; }
     
-    // Navigation property having many-to-many relationship with tags
+    // Mood tracking properties
+    [Column("primary_mood")]
+    public string PrimaryMood { get; set; } = string.Empty;  // Required
+    
+    [Column("secondary_mood_1")]
+    public string? SecondaryMood1 { get; set; }  // Optional
+    
+    [Column("secondary_mood_2")]
+    public string? SecondaryMood2 { get; set; }  // Optional
+    
+    // Navigation property - many-to-many relationship with tags
     public List<TagModel> Tags { get; set; } = new();
 }

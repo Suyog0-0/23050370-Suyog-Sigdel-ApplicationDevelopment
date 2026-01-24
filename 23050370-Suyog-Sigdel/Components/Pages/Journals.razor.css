@@ -120,6 +120,102 @@
     color: #6c757d;
 }
 
+/* ==================== COMPACT MOOD SECTION ==================== */
+.mood-section-compact {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.mood-row {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.mood-label-compact {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #2c3e50;
+    min-width: 100px;
+    flex-shrink: 0;
+}
+
+.dark .mood-label-compact {
+    color: #e0e0e0;
+}
+
+.mood-label-compact i {
+    font-size: 1rem;
+}
+
+.required {
+    color: #e74c3c;
+    font-size: 1rem;
+    margin-left: 2px;
+}
+
+.mood-dropdown-compact {
+    flex: 1;
+    padding: 0.55rem 0.8rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background: white;
+    color: #2c3e50;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mood-dropdown-compact.primary {
+    font-weight: 500;
+}
+
+.mood-dropdown-compact:focus {
+    outline: none;
+    border-color: var(--primary-color, #3498db);
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+}
+
+.dark .mood-dropdown-compact {
+    background: #2a2a2a;
+    border-color: #444444;
+    color: #e0e0e0;
+}
+
+.dark .mood-dropdown-compact:focus {
+    border-color: var(--primary-color, #3498db);
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.secondary-row {
+    padding-left: 0;
+}
+
+.secondary-label {
+    color: #7f8c8d;
+    font-weight: 500;
+}
+
+.dark .secondary-label {
+    color: #adb5bd;
+}
+
+.secondary-moods-compact {
+    display: flex;
+    gap: 0.6rem;
+    flex: 1;
+}
+
+.secondary-moods-compact .mood-dropdown-compact {
+    flex: 1;
+    font-size: 0.85rem;
+}
+
 /* ==================== TAG INPUT SECTION ==================== */
 .tag-input-container {
     margin-bottom: 1rem;
@@ -359,5 +455,20 @@
     .tag-badge {
         font-size: 0.8rem;
         padding: 0.35rem 0.7rem;
+    }
+
+    .mood-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+
+    .mood-label-compact {
+        min-width: auto;
+    }
+
+    .secondary-moods-compact {
+        flex-direction: column;
+        gap: 0.5rem;
     }
 }

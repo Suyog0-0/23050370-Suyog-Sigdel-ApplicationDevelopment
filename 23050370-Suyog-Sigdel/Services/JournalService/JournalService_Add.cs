@@ -7,9 +7,10 @@ namespace _23050370_Suyog_Sigdel.Services;
 public partial class JournalService
 {
     // ──────────────────────────────────────────────
-    // ADD NEW ENTRY (IF NOT EXIST) WITH TAGS
+    // ADD NEW ENTRY (IF NOT EXIST) WITH TAGS AND MOODS
     // ──────────────────────────────────────────────
-    public async Task AddEntryAsync(string title, string content, List<string> tagNames)
+    public async Task AddEntryAsync(string title, string content, List<string> tagNames, 
+                                   string primaryMood, string? secondaryMood1 = null, string? secondaryMood2 = null)
     {
         try
         {
@@ -26,7 +27,10 @@ public partial class JournalService
                 Date = DateTime.UtcNow,
                 EntryDay = today,
                 Title = title,
-                Content = content
+                Content = content,
+                PrimaryMood = primaryMood,
+                SecondaryMood1 = secondaryMood1,
+                SecondaryMood2 = secondaryMood2
             };
 
             // Add tags if provided

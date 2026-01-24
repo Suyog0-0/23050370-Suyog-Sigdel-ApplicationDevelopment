@@ -6,9 +6,10 @@ namespace _23050370_Suyog_Sigdel.Services;
 public partial class JournalService
 {
     // ──────────────────────────────────────────────
-    // UPDATE ENTRY BY ID WITH TAGS
+    // UPDATE ENTRY BY ID WITH TAGS AND MOODS
     // ──────────────────────────────────────────────
-    public async Task UpdateEntryByIdAsync(int id, string title, string content, List<string> tagNames)
+    public async Task UpdateEntryByIdAsync(int id, string title, string content, List<string> tagNames,
+        string primaryMood, string? secondaryMood1 = null, string? secondaryMood2 = null)
     {
         try
         {
@@ -21,6 +22,9 @@ public partial class JournalService
                 entry.Title = title;
                 entry.Content = content;
                 entry.Date = DateTime.UtcNow;
+                entry.PrimaryMood = primaryMood;
+                entry.SecondaryMood1 = secondaryMood1;
+                entry.SecondaryMood2 = secondaryMood2;
 
                 // Update tags
                 entry.Tags.Clear();
