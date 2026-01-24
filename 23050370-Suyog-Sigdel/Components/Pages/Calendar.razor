@@ -1,0 +1,161 @@
+@page "/calendar"
+@inject _23050370_Suyog_Sigdel.Services.JournalService JournalService
+@inject NavigationManager Navigation
+
+<div class="calendar-container">
+    <div class="calendar-header">
+        <button class="back-button" @onclick="GoBack">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <h1>Calendar</h1>
+    </div>
+
+    <div class="calendar-navigation">
+        <button class="nav-btn" @onclick="PreviousMonth">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        
+        <h2 class="current-month">
+            @currentDate.ToString("MMMM yyyy")
+        </h2>
+        
+        <button class="today-btn" @onclick="GoToToday">
+            Today
+        </button>
+        
+        <button class="nav-btn" @onclick="NextMonth">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <div class="calendar-grid">
+        <!-- Day headers -->
+        <div class="day-header">Sun</div>
+        <div class="day-header">Mon</div>
+        <div class="day-header">Tue</div>
+        <div class="day-header">Wed</div>
+        <div class="day-header">Thu</div>
+        <div class="day-header">Fri</div>
+        <div class="day-header">Sat</div>
+
+        <!-- Calendar days -->
+        @foreach (var day in calendarDays)
+        {
+            <div class="calendar-day @GetDayClass(day)" @onclick="() => OpenEntry(day)">
+                <span class="day-number">@day.Day</span>
+                @if (HasEntry(day))
+                {
+                    var entryTitle = GetEntryTitle(day);
+                    <div class="entry-title-badge">
+                        @entryTitle
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private DateTime currentDate = DateTime.Now;
+    private List<DateTime> calendarDays = new();
+    private List<_23050370_Suyog_Sigdel.Models.JournalEntryModel> journalEntries = new();
+    private Dictionary<DateOnly, string> entriesTitleMap = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadJournalEntries();
+        GenerateCalendar();
+    }
+
+    private async Task LoadJournalEntries()
+    {
+        journalEntries = await JournalService.GetEntriesAsync();
+        
+        // Create a dictionary mapping date to title
+        entriesTitleMap = journalEntries.ToDictionary(
+            e => e.EntryDay,
+            e => string.IsNullOrWhiteSpace(e.Title) ? "Entry" : e.Title
+        );
+    }
+
+    private void GenerateCalendar()
+    {
+        calendarDays.Clear();
+        
+        // First day of the month
+        var firstDay = new DateTime(currentDate.Year, currentDate.Month, 1);
+        
+        // Start from Sunday of the week containing the first day
+        var startDate = firstDay.AddDays(-(int)firstDay.DayOfWeek);
+        
+        // Generate 42 days (6 weeks) to fill the calendar grid
+        for (int i = 0; i < 42; i++)
+        {
+            calendarDays.Add(startDate.AddDays(i));
+        }
+    }
+
+    private void PreviousMonth()
+    {
+        currentDate = currentDate.AddMonths(-1);
+        GenerateCalendar();
+    }
+
+    private void NextMonth()
+    {
+        currentDate = currentDate.AddMonths(1);
+        GenerateCalendar();
+    }
+
+    private void GoToToday()
+    {
+        currentDate = DateTime.Now;
+        GenerateCalendar();
+    }
+
+    private string GetDayClass(DateTime day)
+    {
+        var classes = new List<string>();
+        
+        if (day.Month != currentDate.Month)
+            classes.Add("other-month");
+        
+        if (HasEntry(day))
+            classes.Add("has-entry");
+        
+        if (IsToday(day))
+            classes.Add("today");
+        
+        return string.Join(" ", classes);
+    }
+
+    private bool HasEntry(DateTime day)
+    {
+        return entriesTitleMap.ContainsKey(DateOnly.FromDateTime(day));
+    }
+
+    private string GetEntryTitle(DateTime day)
+    {
+        var dateOnly = DateOnly.FromDateTime(day);
+        return entriesTitleMap.TryGetValue(dateOnly, out var title) ? title : "";
+    }
+
+    private bool IsToday(DateTime day)
+    {
+        return day.Date == DateTime.Today;
+    }
+
+    private void OpenEntry(DateTime day)
+    {
+        // Only navigate if there's an entry for this day
+        if (HasEntry(day))
+        {
+            Navigation.NavigateTo("/journals");
+        }
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/");
+    }
+}
