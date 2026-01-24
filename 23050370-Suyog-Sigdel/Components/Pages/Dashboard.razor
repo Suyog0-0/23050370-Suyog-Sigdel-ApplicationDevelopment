@@ -1,0 +1,251 @@
+@page "/dashboard"
+@inject _23050370_Suyog_Sigdel.Services.JournalService JournalService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <button class="back-button" @onclick="GoBack">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <h1>Dashboard Analytics</h1>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="loading">Loading analytics...</div>
+    }
+    else
+    {
+        <div class="charts-grid">
+            <!-- Mood Distribution Pie Chart -->
+            <div class="chart-card">
+                <h3>Primary Mood Distribution</h3>
+                <canvas id="moodChart"></canvas>
+            </div>
+
+            <!-- Most Used Tags Bar Chart -->
+            <div class="chart-card">
+                <h3>Top 5 Tags</h3>
+                <canvas id="tagsChart"></canvas>
+            </div>
+
+            <!-- Frequent Moods (All moods including secondary) -->
+            <div class="chart-card">
+                <h3>All Moods Frequency</h3>
+                <canvas id="frequentMoodsChart"></canvas>
+            </div>
+
+            <!-- Tag Breakdown Pie Chart -->
+            <div class="chart-card">
+                <h3>Tag Distribution</h3>
+                <canvas id="tagBreakdownChart"></canvas>
+            </div>
+
+            <!-- Word Count Trend Line Chart -->
+            <div class="chart-card full-width">
+                <h3>Word Count Trends (Last 7 Days)</h3>
+                <canvas id="wordCountChart"></canvas>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private bool isLoading = true;
+    private bool chartScriptLoaded = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                // Wait for Chart.js to load
+                for (int i = 0; i < 10; i++)
+                {
+                    try
+                    {
+                        var result = await JS.InvokeAsync<bool>("eval", "typeof Chart !== 'undefined'");
+                        if (result)
+                        {
+                            chartScriptLoaded = true;
+                            Console.WriteLine("✅ Chart.js is loaded!");
+                            break;
+                        }
+                    }
+                    catch { }
+                    await Task.Delay(200);
+                }
+
+                if (!chartScriptLoaded)
+                {
+                    Console.WriteLine("❌ ERROR: Chart.js failed to load!");
+                    isLoading = false;
+                    StateHasChanged();
+                    return;
+                }
+
+                await LoadAnalytics();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error loading analytics: {ex.Message}");
+                isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task LoadAnalytics()
+    {
+        var entries = await JournalService.GetEntriesAsync();
+
+        // Handle empty entries
+        if (!entries.Any())
+        {
+            Console.WriteLine("⚠️ No entries found");
+            isLoading = false;
+            StateHasChanged();
+            return;
+        }
+
+        Console.WriteLine($"📊 Processing {entries.Count} entries...");
+
+        // 1. Primary Mood Distribution Data
+        var moodCounts = entries
+            .Where(e => !string.IsNullOrEmpty(e.PrimaryMood))
+            .GroupBy(e => e.PrimaryMood)
+            .Select(g => new { Mood = g.Key, Count = g.Count() })
+            .OrderByDescending(x => x.Count)
+            .Take(5)
+            .ToList();
+
+        var moodLabels = moodCounts.Any() ? moodCounts.Select(x => x.Mood).ToArray() : new[] { "No Data" };
+        var moodData = moodCounts.Any() ? moodCounts.Select(x => x.Count).ToArray() : new[] { 1 };
+
+        // 2. Top 5 Tags Bar Chart
+        var tagCounts = entries
+            .SelectMany(e => e.Tags)
+            .GroupBy(t => t.Name)
+            .Select(g => new { Tag = g.Key, Count = g.Count() })
+            .OrderByDescending(x => x.Count)
+            .Take(5)
+            .ToList();
+
+        var tagLabels = tagCounts.Any() ? tagCounts.Select(x => x.Tag).ToArray() : new[] { "No Tags" };
+        var tagData = tagCounts.Any() ? tagCounts.Select(x => x.Count).ToArray() : new[] { 1 };
+
+        // 3. All Frequent Moods (Primary + Secondary)
+        var allMoods = new List<string>();
+        foreach (var entry in entries)
+        {
+            if (!string.IsNullOrEmpty(entry.PrimaryMood))
+                allMoods.Add(entry.PrimaryMood);
+            if (!string.IsNullOrEmpty(entry.SecondaryMood1))
+                allMoods.Add(entry.SecondaryMood1);
+            if (!string.IsNullOrEmpty(entry.SecondaryMood2))
+                allMoods.Add(entry.SecondaryMood2);
+        }
+
+        var frequentMoodCounts = allMoods
+            .GroupBy(m => m)
+            .Select(g => new { Mood = g.Key, Count = g.Count() })
+            .OrderByDescending(x => x.Count)
+            .Take(7)
+            .ToList();
+
+        var frequentMoodLabels = frequentMoodCounts.Any() ? frequentMoodCounts.Select(x => x.Mood).ToArray() : new[] { "No Data" };
+        var frequentMoodData = frequentMoodCounts.Any() ? frequentMoodCounts.Select(x => x.Count).ToArray() : new[] { 1 };
+
+        // 4. Tag Breakdown (All tags as pie chart)
+        var allTagCounts = entries
+            .SelectMany(e => e.Tags)
+            .GroupBy(t => t.Name)
+            .Select(g => new { Tag = g.Key, Count = g.Count() })
+            .OrderByDescending(x => x.Count)
+            .Take(8)
+            .ToList();
+
+        var tagBreakdownLabels = allTagCounts.Any() ? allTagCounts.Select(x => x.Tag).ToArray() : new[] { "No Tags" };
+        var tagBreakdownData = allTagCounts.Any() ? allTagCounts.Select(x => x.Count).ToArray() : new[] { 1 };
+
+        // 5. Word Count Trends (Last 7 days)
+        var last7Days = entries
+            .Where(e => e.EntryDay >= DateOnly.FromDateTime(DateTime.Now.AddDays(-7)))
+            .OrderBy(e => e.EntryDay)
+            .ToList();
+
+        var dateLabels = last7Days.Any() ? last7Days.Select(e => e.EntryDay.ToString("MM/dd")).ToArray() : new[] { "No Data" };
+        var wordCounts = last7Days.Any() ? last7Days.Select(e => CountWords(e.Content)).ToArray() : new[] { 0 };
+
+        // FIRST: Set loading to false and force UI update
+        isLoading = false;
+        StateHasChanged();
+        
+        // THEN: Wait for DOM to render
+        await Task.Delay(300);
+
+        try
+        {
+            Console.WriteLine("🎨 Calling createCharts...");
+            
+            // Check if canvas elements exist before calling JS
+            var canvasExists = await JS.InvokeAsync<bool>("eval", 
+                "document.getElementById('moodChart') !== null && " +
+                "document.getElementById('tagsChart') !== null && " +
+                "document.getElementById('frequentMoodsChart') !== null && " +
+                "document.getElementById('tagBreakdownChart') !== null && " +
+                "document.getElementById('wordCountChart') !== null");
+            
+            Console.WriteLine($"Canvas elements exist: {canvasExists}");
+            
+            if (!canvasExists)
+            {
+                Console.WriteLine("❌ ERROR: Canvas elements not found in DOM!");
+                return;
+            }
+            
+            // Create all 5 charts
+            await JS.InvokeVoidAsync("createCharts", 
+                moodLabels, moodData,                    // Chart 1: Primary moods
+                tagLabels, tagData,                       // Chart 2: Top tags
+                frequentMoodLabels, frequentMoodData,     // Chart 3: All moods
+                tagBreakdownLabels, tagBreakdownData,     // Chart 4: Tag breakdown
+                dateLabels, wordCounts);                  // Chart 5: Word counts
+                
+            Console.WriteLine("✅ All charts created successfully!");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ JS Error: {ex.Message}");
+            Console.WriteLine($"Stack: {ex.StackTrace}");
+        }
+    }
+
+    private int CountWords(string content)
+    {
+        if (string.IsNullOrWhiteSpace(content)) return 0;
+        
+        // Remove HTML tags
+        var text = System.Text.RegularExpressions.Regex.Replace(content, "<.*?>", " ");
+        
+        // Count words
+        return text.Split(new[] { ' ', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries).Length;
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("destroyCharts");
+        }
+        catch { }
+    }
+}

@@ -1,0 +1,183 @@
+.dashboard-container {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+}
+
+/* ==================== HEADER ==================== */
+.dashboard-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.back-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: #f0f2f5;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.back-button:hover {
+    background: #e4e6eb;
+    color: var(--primary-color, #3498db);
+    transform: translateX(-3px);
+}
+
+.back-button i {
+    font-size: 1.1rem;
+}
+
+.dashboard-header h1 {
+    font-size: 2rem;
+    color: #2c3e50;
+    margin: 0;
+    flex: 1;
+}
+
+/* ==================== LOADING ==================== */
+.loading {
+    text-align: center;
+    padding: 3rem;
+    color: #7f8c8d;
+    font-size: 1.1rem;
+}
+
+/* ==================== CHARTS GRID ==================== */
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.chart-card {
+    background: white;
+    border: 2px solid #e8ecef;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.chart-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    border-color: var(--primary-color, #3498db);
+}
+
+.chart-card h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0 0 1.2rem 0;
+    padding-bottom: 0.8rem;
+    border-bottom: 2px solid #ecf0f1;
+}
+
+.chart-card.full-width {
+    grid-column: 1 / -1;
+}
+
+.chart-card canvas {
+    max-height: 300px;
+}
+
+/* ==================== DARK MODE ==================== */
+.dark .dashboard-header {
+    border-bottom-color: #3a3a3a;
+}
+
+.dark .dashboard-header h1 {
+    color: #f8f9fa;
+}
+
+.dark .back-button {
+    background: #2a2a2a;
+    color: #ccc;
+}
+
+.dark .back-button:hover {
+    background: #333;
+    color: #64b5f6;
+}
+
+.dark .loading {
+    color: #adb5bd;
+}
+
+.dark .chart-card {
+    background: #2a2a2a;
+    border-color: #3a3a3a;
+}
+
+.dark .chart-card:hover {
+    border-color: var(--primary-color, #3498db);
+}
+
+.dark .chart-card h3 {
+    color: #e0e0e0;
+    border-bottom-color: #3a3a3a;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 1024px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-card.full-width {
+        grid-column: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 0 1rem;
+        margin: 1rem auto;
+    }
+
+    .dashboard-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .dashboard-header h1 {
+        font-size: 1.6rem;
+    }
+
+    .back-button {
+        width: 38px;
+        height: 38px;
+    }
+
+    .back-button i {
+        font-size: 1rem;
+    }
+
+    .charts-grid {
+        gap: 1rem;
+    }
+
+    .chart-card {
+        padding: 1.2rem;
+    }
+
+    .chart-card h3 {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .chart-card canvas {
+        max-height: 250px;
+    }
+}

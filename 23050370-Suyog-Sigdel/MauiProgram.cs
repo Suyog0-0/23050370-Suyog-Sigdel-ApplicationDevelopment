@@ -44,6 +44,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<ThemeService>();
         builder.Services.AddSingleton<SearchService>();
         builder.Services.AddScoped<StreakService>();
+        builder.Services.AddScoped<AnalyticsService>();
+
 
         
         builder.Services.AddSingleton<SecurityService>(serviceProvider => 
