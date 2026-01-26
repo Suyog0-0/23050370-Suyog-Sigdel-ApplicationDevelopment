@@ -146,3 +146,8 @@
         padding: 14px;
     }
 }
+
+.ql-editor a {
+    cursor: pointer;
+    text-decoration: underline;
+}

@@ -1,15 +1,13 @@
 window.quillEditors = {};
 
 window.initQuill = (editorId, dotNetRef) => {
-    console.log("[Quill] initQuill called:", editorId);
+    console.log("[Quill] initQuill:", editorId);
 
     const container = document.getElementById(editorId);
     if (!container) {
-        console.error("[Quill] Container NOT found:", editorId);
+        console.error("Quill container not found:", editorId);
         return false;
     }
-
-    console.log("[Quill] Container found");
 
     const quill = new Quill(container, {
         theme: 'snow',
@@ -17,6 +15,7 @@ window.initQuill = (editorId, dotNetRef) => {
         modules: {
             toolbar: [
                 ['bold', 'italic', 'underline'],
+                [{ 'script': 'sub' }, { 'script': 'super' }], // ✅ NEW
                 [{ header: [1, 2, 3, false] }],
                 [{ list: 'ordered' }, { list: 'bullet' }],
                 ['link'],
@@ -25,34 +24,40 @@ window.initQuill = (editorId, dotNetRef) => {
         }
     });
 
-    console.log("[Quill] Editor initialized");
-
+    // Store editor
     window.quillEditors[editorId] = quill;
 
+    // Notify Blazor on change
     quill.on('text-change', () => {
-        console.log("[Quill] Content changed");
         dotNetRef?.invokeMethodAsync(
             'HandleContentChange',
             quill.root.innerHTML
         );
     });
 
+    //  links clickable
+    quill.root.addEventListener('click', (e) => {
+        const link = e.target.closest('a');
+        if (link && link.href) {
+            e.preventDefault();
+            e.stopPropagation();
+            window.open(link.href, '_blank');
+        }
+    });
+
+    console.log("[Quill] Editor ready with sub & super script");
     return true;
 };
 
-window.getQuillContent = (editorId) => {
-    console.log("[Quill] getQuillContent:", editorId);
-    return window.quillEditors[editorId]?.root.innerHTML || '';
-};
+window.getQuillContent = (editorId) =>
+    window.quillEditors[editorId]?.root.innerHTML || '';
 
 window.setQuillContent = (editorId, html) => {
-    console.log("[Quill] setQuillContent:", editorId);
     const q = window.quillEditors[editorId];
-    if (q) q.root.innerHTML = html;
+    if (q) q.root.innerHTML = html || '';
 };
 
 window.clearQuill = (editorId) => {
-    console.log("[Quill] clearQuill:", editorId);
     const q = window.quillEditors[editorId];
     if (q) q.setText('');
 };
