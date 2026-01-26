@@ -4,7 +4,7 @@
     padding: 0 1.5rem;
 }
 
-/* Journal Header with Back Button and Export Button */
+/* Journal Header with Buttons */
 .journal-header {
     display: flex;
     align-items: center;
@@ -37,9 +37,55 @@
     font-size: 1.1rem;
 }
 
+/* Light theme h1 */
+.light h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin: 0;
+    font-size: 1.8rem;
+    flex: 1;
+}
+
+/* Dark theme h1 */
+.dark h1 {
+    text-align: center;
+    color: #f8f9fa;
+    margin: 0;
+    font-size: 1.8rem;
+    flex: 1;
+}
+
+/* Add Button */
+.add-button {
+    margin-left: auto;
+    padding: 0.6rem 1.2rem;
+    border: 2px solid var(--primary-color, #3498db);
+    border-radius: 8px;
+    background: white;
+    color: var(--primary-color, #3498db);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.add-button:hover {
+    background: var(--primary-color, #3498db);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+}
+
+.add-button i {
+    font-size: 1rem;
+}
+
 /* Export Button */
 .export-button {
-    margin-left: auto;
     padding: 0.6rem 1.2rem;
     border: 2px solid #27ae60;
     border-radius: 8px;
@@ -66,25 +112,7 @@
     font-size: 1rem;
 }
 
-/* Light theme h1 */
-.light h1 {
-    text-align: center;
-    color: #2c3e50;
-    margin: 0;
-    font-size: 1.8rem;
-    flex: 1;
-}
-
-/* Dark theme h1 */
-.dark h1 {
-    text-align: center;
-    color: #f8f9fa;
-    margin: 0;
-    font-size: 1.8rem;
-    flex: 1;
-}
-
-/* Dark theme back button */
+/* Dark theme buttons */
 .dark .back-button {
     background: #2a2a2a;
     color: #ccc;
@@ -95,7 +123,15 @@
     color: #64b5f6;
 }
 
-/* Dark theme export button */
+.dark .add-button {
+    background: #2a2a2a;
+}
+
+.dark .add-button:hover {
+    background: var(--primary-color, #3498db);
+    color: white;
+}
+
 .dark .export-button {
     background: #2a2a2a;
 }
@@ -103,282 +139,6 @@
 .dark .export-button:hover {
     background: #27ae60;
     color: white;
-}
-
-/* Input Section */
-.input-section {
-    background: #f8f9fa;
-    padding: 1.5rem;
-    border-radius: 10px;
-    margin-bottom: 2rem;
-    border: 2px solid #e8ecef;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-}
-
-.dark .input-section {
-    background: #1a1a1a;
-    border-color: #444444;
-}
-
-/* Title Input */
-.title-input {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 500;
-    margin-bottom: 1rem;
-    background: white;
-    color: #2c3e50;
-    transition: all 0.2s ease;
-}
-
-.title-input:focus {
-    outline: none;
-    border-color: var(--primary-color, #3498db);
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-}
-
-.title-input::placeholder {
-    color: #95a5a6;
-}
-
-.dark .title-input {
-    background: #2a2a2a;
-    border-color: #444444;
-    color: #e0e0e0;
-}
-
-.dark .title-input:focus {
-    border-color: var(--primary-color, #3498db);
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-}
-
-.dark .title-input::placeholder {
-    color: #6c757d;
-}
-
-/* ==================== COMPACT MOOD SECTION ==================== */
-.mood-section-compact {
-    margin-bottom: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-}
-
-.mood-row {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-}
-
-.mood-label-compact {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #2c3e50;
-    min-width: 100px;
-    flex-shrink: 0;
-}
-
-.dark .mood-label-compact {
-    color: #e0e0e0;
-}
-
-.mood-label-compact i {
-    font-size: 1rem;
-}
-
-.required {
-    color: #e74c3c;
-    font-size: 1rem;
-    margin-left: 2px;
-}
-
-.mood-dropdown-compact {
-    flex: 1;
-    padding: 0.55rem 0.8rem;
-    border: 2px solid #e0e0e0;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    background: white;
-    color: #2c3e50;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.mood-dropdown-compact.primary {
-    font-weight: 500;
-}
-
-.mood-dropdown-compact:focus {
-    outline: none;
-    border-color: var(--primary-color, #3498db);
-    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
-}
-
-.dark .mood-dropdown-compact {
-    background: #2a2a2a;
-    border-color: #444444;
-    color: #e0e0e0;
-}
-
-.dark .mood-dropdown-compact:focus {
-    border-color: var(--primary-color, #3498db);
-    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-}
-
-.secondary-row {
-    padding-left: 0;
-}
-
-.secondary-label {
-    color: #7f8c8d;
-    font-weight: 500;
-}
-
-.dark .secondary-label {
-    color: #adb5bd;
-}
-
-.secondary-moods-compact {
-    display: flex;
-    gap: 0.6rem;
-    flex: 1;
-}
-
-.secondary-moods-compact .mood-dropdown-compact {
-    flex: 1;
-    font-size: 0.85rem;
-}
-
-/* ==================== TAG INPUT SECTION ==================== */
-.tag-input-container {
-    margin-bottom: 1rem;
-}
-
-.tag-input {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    background: white;
-    color: #2c3e50;
-    transition: all 0.2s ease;
-}
-
-.tag-input:focus {
-    outline: none;
-    border-color: var(--primary-color, #3498db);
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-}
-
-.tag-input::placeholder {
-    color: #95a5a6;
-}
-
-.dark .tag-input {
-    background: #2a2a2a;
-    border-color: #444444;
-    color: #e0e0e0;
-}
-
-.dark .tag-input:focus {
-    border-color: var(--primary-color, #3498db);
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-}
-
-.dark .tag-input::placeholder {
-    color: #6c757d;
-}
-
-/* Tag Display */
-.tags-display {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.8rem;
-    min-height: 20px;
-}
-
-.tag-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.4rem 0.8rem;
-    background: var(--primary-color, #3498db);
-    color: white;
-    border-radius: 16px;
-    font-size: 0.85rem;
-    font-weight: 500;
-}
-
-.tag-remove {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 1.2rem;
-    font-weight: bold;
-    cursor: pointer;
-    padding: 0;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-}
-
-.tag-remove:hover {
-    background: rgba(255, 255, 255, 0.2);
-}
-
-/* Buttons */
-.button-row {
-    display: flex;
-    gap: 0.8rem;
-    margin-top: 1rem;
-}
-
-/* Add Today Button */
-.btn-add {
-    flex: 1;
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 8px;
-    color: white;
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    background: var(--primary-color, #3498db);
-}
-
-.btn-add:hover {
-    background: var(--primary-hover, #217dbb);
-}
-
-/* Update Today Button - Green */
-.btn-update {
-    flex: 1;
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 8px;
-    color: white;
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    background: #27ae60;
-}
-
-.btn-update:hover {
-    background: #1e874a;
 }
 
 /* Status Messages */
@@ -416,43 +176,6 @@
     gap: 1.2rem;
 }
 
-/* Save Changes Button - Green */
-.btn-save {
-    flex: 1;
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 8px;
-    color: white;
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    background: #27ae60;
-}
-
-.btn-save:hover {
-    background: #1e874a;
-}
-
-/* Cancel Button - Gray */
-.btn-cancel {
-    flex: 1;
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 8px;
-    color: white;
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    background: linear-gradient(135deg, #868f96 0%, #596164 100%);
-}
-
-.btn-cancel:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(134, 143, 150, 0.4);
-}
-
 /* Responsive */
 @media (max-width: 768px) {
     .journal-container {
@@ -481,43 +204,10 @@
         font-size: 1rem;
     }
 
+    .add-button,
     .export-button {
         order: 3;
         font-size: 0.85rem;
         padding: 0.5rem 1rem;
-    }
-
-    .input-section {
-        padding: 1.2rem;
-    }
-
-    .title-input,
-    .tag-input {
-        font-size: 0.95rem;
-        padding: 0.7rem 0.9rem;
-    }
-
-    .button-row {
-        flex-direction: column;
-    }
-
-    .tag-badge {
-        font-size: 0.8rem;
-        padding: 0.35rem 0.7rem;
-    }
-
-    .mood-row {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.5rem;
-    }
-
-    .mood-label-compact {
-        min-width: auto;
-    }
-
-    .secondary-moods-compact {
-        flex-direction: column;
-        gap: 0.5rem;
     }
 }

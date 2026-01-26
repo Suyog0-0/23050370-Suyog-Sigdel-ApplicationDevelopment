@@ -1,11 +1,9 @@
 @page "/journals"
 @inject _23050370_Suyog_Sigdel.Services.JournalService JournalService
 @inject _23050370_Suyog_Sigdel.Services.SearchService SearchService
-@inject _23050370_Suyog_Sigdel.Services.TagService.TagService TagService
 @inject NavigationManager Navigation
 @using _23050370_Suyog_Sigdel.Components.Modals
 @using _23050370_Suyog_Sigdel.Components.Shared
-@using _23050370_Suyog_Sigdel.Helpers
 @implements IDisposable
 
 <div class="journal-container">
@@ -14,87 +12,14 @@
             <i class="fas fa-arrow-left"></i>
         </button>
         <h1>My Journals</h1>
+        <button class="add-button" @onclick="ShowAddModal" title="Add Entry">
+            <i class="fas fa-plus"></i>
+            Add Entry
+        </button>
         <button class="export-button" @onclick="ShowExportModal" title="Export to PDF">
             <i class="fas fa-file-pdf"></i>
             Export PDF
         </button>
-    </div>
-
-    <div class="input-section">
-        <input 
-            type="text" 
-            class="title-input" 
-            placeholder="Enter title (optional)..." 
-            @bind="titleText" />
-        
-        <!-- Compact Mood Selection -->
-        <div class="mood-section-compact">
-            <div class="mood-row">
-                <label class="mood-label-compact">
-                    <i class="fas fa-smile"></i> Mood <span class="required">*</span>
-                </label>
-                <select class="mood-dropdown-compact primary" @bind="primaryMood">
-                    <option value="">Select mood...</option>
-                    @foreach (var mood in MoodHelper.AvailableMoods)
-                    {
-                        <option value="@mood.Name">
-                            @mood.Name
-                        </option>
-                    }
-                </select>
-            </div>
-
-            <div class="mood-row secondary-row">
-                <label class="mood-label-compact secondary-label">
-                    <i class="fas fa-plus-circle"></i> Also feeling
-                </label>
-                <div class="secondary-moods-compact">
-                    <select class="mood-dropdown-compact" @bind="secondaryMood1">
-                        <option value="">Optional...</option>
-                        @foreach (var mood in MoodHelper.AvailableMoods)
-                        {
-                            <option value="@mood.Name">@mood.Name</option>
-                        }
-                    </select>
-                    
-                    <select class="mood-dropdown-compact" @bind="secondaryMood2">
-                        <option value="">Optional...</option>
-                        @foreach (var mood in MoodHelper.AvailableMoods)
-                        {
-                            <option value="@mood.Name">@mood.Name</option>
-                        }
-                    </select>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Tag Input -->
-        <div class="tag-input-container">
-            <input 
-                type="text" 
-                class="tag-input" 
-                placeholder="Add tags (press Enter or comma)..." 
-                @bind="currentTagInput"
-                @bind:event="oninput"
-                @onkeydown="HandleTagKeyPress" />
-            
-            <div class="tags-display">
-                @foreach (var tag in selectedTags)
-                {
-                    <span class="tag-badge">
-                        @tag
-                        <button class="tag-remove" @onclick="() => RemoveTag(tag)">×</button>
-                    </span>
-                }
-            </div>
-        </div>
-        
-        <RichTextEditor @ref="richTextEditor" />
-        
-        <div class="button-row">
-            <button class="btn-add" @onclick="AddEntry">Add Today</button>
-            <button class="btn-update" @onclick="UpdateEntry">Update Today</button>
-        </div>
     </div>
 
     @if (journals == null)
@@ -141,27 +66,18 @@
     <ErrorModal @ref="errorModal" Message="@errorMessage" OnClose="OnErrorModalClose" />
     <ExportPDFModal @ref="exportModal" OnClose="OnExportModalClose" />
     <EditJournalModal @ref="editModal" OnClose="OnEditModalClose" />
+    <AddJournalModal @ref="addModal" OnClose="OnAddModalClose" OnError="OnAddError" />
 </div>
 
 @code {
-    private RichTextEditor? richTextEditor;
     private List<_23050370_Suyog_Sigdel.Models.JournalEntryModel>? journals;
     private ConfirmDeleteModal? deleteModal;
     private ErrorModal? errorModal;
     private ExportPDFModal? exportModal;
     private EditJournalModal? editModal;
+    private AddJournalModal? addModal;
     private int? deleteEntryId;
     private string errorMessage = string.Empty;
-    private string titleText = string.Empty;
-
-    // Mood fields
-    private string primaryMood = string.Empty;
-    private string? secondaryMood1;
-    private string? secondaryMood2;
-
-    // Tag-related fields
-    private string currentTagInput = string.Empty;
-    private List<string> selectedTags = new();
 
     // Pagination variables
     private int pageSize = 5;
@@ -232,35 +148,43 @@
     }
 
     // ────────────────────────────────────────────────────────
-    // TAG HANDLING
+    // MODAL HANDLERS
     // ────────────────────────────────────────────────────────
-    private void HandleTagKeyPress(KeyboardEventArgs e)
+    private async Task ShowAddModal()
     {
-        if (e.Key == "Enter" || e.Key == ",")
+        if (addModal != null)
         {
-            AddCurrentTag();
+            await addModal.TryShow(async () =>
+            {
+                var today = DateOnly.FromDateTime(DateTime.Now);
+                var todayEntry = await JournalService.GetEntryByDateAsync(today);
+                return todayEntry != null;
+            });
         }
     }
 
-    private void AddCurrentTag()
+    private void OnAddError(string message)
     {
-        var tag = currentTagInput.Trim().ToLower().Replace(",", "");
-        
-        if (!string.IsNullOrWhiteSpace(tag) && !selectedTags.Contains(tag))
+        errorMessage = message;
+        errorModal?.Show();
+    }
+
+    private async Task OnAddModalClose(bool saved)
+    {
+        if (saved && addModal != null)
         {
-            selectedTags.Add(tag);
-            currentTagInput = string.Empty;
+            var title = addModal.GetTitle();
+            var content = await addModal.GetContent();
+            var tags = addModal.GetSelectedTags();
+            var primaryMood = addModal.GetPrimaryMood();
+            var secondaryMood1 = addModal.GetSecondaryMood1();
+            var secondaryMood2 = addModal.GetSecondaryMood2();
+
+            await JournalService.AddEntryAsync(title, content, tags, primaryMood, secondaryMood1, secondaryMood2);
+            await LoadJournals();
         }
     }
 
-    private void RemoveTag(string tag)
-    {
-        selectedTags.Remove(tag);
-    }
-
-    // ────────────────────────────────────────────────────────
-    // JOURNAL ENTRY OPERATIONS
-    // ────────────────────────────────────────────────────────
     private async Task ShowEditModal(_23050370_Suyog_Sigdel.Models.JournalEntryModel entry)
     {
         if (editModal != null)
@@ -273,7 +197,6 @@
     {
         if (saved && editModal != null)
         {
-            // Get the updated entry from the modal
             var entry = journals?.FirstOrDefault(j => j.Id == journals.FirstOrDefault()?.Id);
             
             if (entry != null)
@@ -292,91 +215,6 @@
                 await LoadJournals();
             }
         }
-    }
-
-    private async Task AddEntry()
-    {
-        var htmlContent = await richTextEditor!.GetHTML();
-
-        if (string.IsNullOrWhiteSpace(htmlContent) || htmlContent == "<br>" || htmlContent == "<div><br></div>")
-        {
-            errorMessage = "Please write something before adding an entry.";
-            errorModal?.Show();
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(primaryMood))
-        {
-            errorMessage = "Please select a primary mood.";
-            errorModal?.Show();
-            return;
-        }
-
-        var today = DateOnly.FromDateTime(DateTime.Now);
-        var todayEntry = journals?.FirstOrDefault(j => j.EntryDay == today);
-
-        if (todayEntry != null)
-        {
-            errorMessage = "A journal entry for today already exists. Please use 'Update Today' to modify it.";
-            errorModal?.Show();
-            return;
-        }
-
-        // Add any pending tag
-        AddCurrentTag();
-
-        await JournalService.AddEntryAsync(titleText, htmlContent, selectedTags, 
-                                          primaryMood, secondaryMood1, secondaryMood2);
-        await richTextEditor.Clear();
-        titleText = string.Empty;
-        primaryMood = string.Empty;
-        secondaryMood1 = null;
-        secondaryMood2 = null;
-        selectedTags.Clear();
-        await LoadJournals();
-    }
-
-    private async Task UpdateEntry()
-    {
-        var htmlContent = await richTextEditor!.GetHTML();
-
-        if (string.IsNullOrWhiteSpace(htmlContent) || htmlContent == "<br>" || htmlContent == "<div><br></div>")
-        {
-            errorMessage = "Please write something before updating an entry.";
-            errorModal?.Show();
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(primaryMood))
-        {
-            errorMessage = "Please select a primary mood.";
-            errorModal?.Show();
-            return;
-        }
-
-        // Check if entry exists for today
-        var today = DateOnly.FromDateTime(DateTime.Now);
-        var todayEntry = journals?.FirstOrDefault(j => j.EntryDay == today);
-
-        if (todayEntry == null)
-        {
-            errorMessage = "No journal entry exists for today. Please use 'Add Today' to create a new entry.";
-            errorModal?.Show();
-            return;
-        }
-
-        // Add any pending tag
-        AddCurrentTag();
-
-        await JournalService.UpdateEntryAsync(titleText, htmlContent, selectedTags,
-                                             primaryMood, secondaryMood1, secondaryMood2);
-        await richTextEditor.Clear();
-        titleText = string.Empty;
-        primaryMood = string.Empty;
-        secondaryMood1 = null;
-        secondaryMood2 = null;
-        selectedTags.Clear();
-        await LoadJournals();
     }
 
     private void ShowDeleteModal(int id)
@@ -400,9 +238,6 @@
         errorMessage = string.Empty;
     }
 
-    // ────────────────────────────────────────────────────────
-    // PDF EXPORT
-    // ────────────────────────────────────────────────────────
     private void ShowExportModal()
     {
         exportModal?.Show();
