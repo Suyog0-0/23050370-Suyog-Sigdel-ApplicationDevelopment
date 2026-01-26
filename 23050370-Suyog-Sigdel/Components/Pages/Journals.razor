@@ -92,16 +92,8 @@
         <RichTextEditor @ref="richTextEditor" />
         
         <div class="button-row">
-            @if (editingEntryId == null)
-            {
-                <button class="btn-add" @onclick="AddEntry">Add Today</button>
-                <button class="btn-update" @onclick="UpdateEntry">Update Today</button>
-            }
-            else
-            {
-                <button class="btn-save" @onclick="SaveEdit">Save Changes</button>
-                <button class="btn-cancel" @onclick="CancelEdit">Cancel</button>
-            }
+            <button class="btn-add" @onclick="AddEntry">Add Today</button>
+            <button class="btn-update" @onclick="UpdateEntry">Update Today</button>
         </div>
     </div>
 
@@ -135,8 +127,7 @@
             @foreach (var entry in PaginatedJournals)
             {
                 <JournalCard Entry="@entry"
-                             IsEditing="@(editingEntryId == entry.Id)"
-                             OnEdit="@(() => StartEdit(entry))"
+                             OnEdit="@(() => ShowEditModal(entry))"
                              OnDelete="@(() => ShowDeleteModal(entry.Id))" />
             }
         </div>
@@ -149,6 +140,7 @@
     <ConfirmDeleteModal @ref="deleteModal" OnClose="OnDeleteModalClose" />
     <ErrorModal @ref="errorModal" Message="@errorMessage" OnClose="OnErrorModalClose" />
     <ExportPDFModal @ref="exportModal" OnClose="OnExportModalClose" />
+    <EditJournalModal @ref="editModal" OnClose="OnEditModalClose" />
 </div>
 
 @code {
@@ -157,8 +149,8 @@
     private ConfirmDeleteModal? deleteModal;
     private ErrorModal? errorModal;
     private ExportPDFModal? exportModal;
+    private EditJournalModal? editModal;
     private int? deleteEntryId;
-    private int? editingEntryId;
     private string errorMessage = string.Empty;
     private string titleText = string.Empty;
 
@@ -269,64 +261,37 @@
     // ────────────────────────────────────────────────────────
     // JOURNAL ENTRY OPERATIONS
     // ────────────────────────────────────────────────────────
-    private async Task StartEdit(_23050370_Suyog_Sigdel.Models.JournalEntryModel entry)
+    private async Task ShowEditModal(_23050370_Suyog_Sigdel.Models.JournalEntryModel entry)
     {
-        editingEntryId = entry.Id;
-        titleText = entry.Title;
-        primaryMood = entry.PrimaryMood;
-        secondaryMood1 = entry.SecondaryMood1;
-        secondaryMood2 = entry.SecondaryMood2;
-        selectedTags = entry.Tags.Select(t => t.Name).ToList();
-        await richTextEditor!.LoadHTMLContent(entry.Content);
-        StateHasChanged();
+        if (editModal != null)
+        {
+            await editModal.ShowAsync(entry);
+        }
     }
 
-    private async Task SaveEdit()
+    private async Task OnEditModalClose(bool saved)
     {
-        if (editingEntryId == null) return;
-
-        var htmlContent = await richTextEditor!.GetHTML();
-
-        if (string.IsNullOrWhiteSpace(htmlContent) || htmlContent == "<br>" || htmlContent == "<div><br></div>")
+        if (saved && editModal != null)
         {
-            errorMessage = "Please write something before saving.";
-            errorModal?.Show();
-            return;
+            // Get the updated entry from the modal
+            var entry = journals?.FirstOrDefault(j => j.Id == journals.FirstOrDefault()?.Id);
+            
+            if (entry != null)
+            {
+                var tags = editModal.GetSelectedTags();
+                await JournalService.UpdateEntryByIdAsync(
+                    entry.Id,
+                    entry.Title,
+                    entry.Content,
+                    tags,
+                    entry.PrimaryMood,
+                    entry.SecondaryMood1,
+                    entry.SecondaryMood2
+                );
+                
+                await LoadJournals();
+            }
         }
-
-        if (string.IsNullOrWhiteSpace(primaryMood))
-        {
-            errorMessage = "Please select a primary mood.";
-            errorModal?.Show();
-            return;
-        }
-
-        // Add any pending tag
-        AddCurrentTag();
-
-        await JournalService.UpdateEntryByIdAsync(editingEntryId.Value, titleText, htmlContent, selectedTags,
-                                                  primaryMood, secondaryMood1, secondaryMood2);
-
-        await richTextEditor.Clear();
-        titleText = string.Empty;
-        primaryMood = string.Empty;
-        secondaryMood1 = null;
-        secondaryMood2 = null;
-        selectedTags.Clear();
-        editingEntryId = null;
-        await LoadJournals();
-    }
-
-    private async Task CancelEdit()
-    {
-        editingEntryId = null;
-        titleText = string.Empty;
-        primaryMood = string.Empty;
-        secondaryMood1 = null;
-        secondaryMood2 = null;
-        selectedTags.Clear();
-        await richTextEditor!.Clear();
-        StateHasChanged();
     }
 
     private async Task AddEntry()
@@ -385,6 +350,17 @@
         if (string.IsNullOrWhiteSpace(primaryMood))
         {
             errorMessage = "Please select a primary mood.";
+            errorModal?.Show();
+            return;
+        }
+
+        // Check if entry exists for today
+        var today = DateOnly.FromDateTime(DateTime.Now);
+        var todayEntry = journals?.FirstOrDefault(j => j.EntryDay == today);
+
+        if (todayEntry == null)
+        {
+            errorMessage = "No journal entry exists for today. Please use 'Add Today' to create a new entry.";
             errorModal?.Show();
             return;
         }

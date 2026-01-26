@@ -12,11 +12,6 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.journal-card.editing {
-    border-color: #f39c12;
-    box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
-}
-
 .entry-header {
     display: flex;
     justify-content: space-between;

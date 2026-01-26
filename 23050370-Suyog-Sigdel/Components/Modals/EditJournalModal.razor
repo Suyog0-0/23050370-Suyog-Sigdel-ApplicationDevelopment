@@ -1,0 +1,243 @@
+@using _23050370_Suyog_Sigdel.Models
+@using _23050370_Suyog_Sigdel.Helpers
+@using _23050370_Suyog_Sigdel.Components.Shared
+@inject _23050370_Suyog_Sigdel.Services.ThemeService ThemeService
+
+<div class="modal-backdrop" style="@(_show ? "display:flex" : "display:none")">
+    <div class="modal-content edit-modal @ThemeService.GetThemeClass()">
+        <div class="modal-header">
+            <div class="header-content">
+                <i class="fas fa-edit"></i>
+                <span>Edit Journal Entry</span>
+            </div>
+            <button class="modal-close" @onclick="Close">×</button>
+        </div>
+        
+        <div class="modal-body">
+            <!-- Title Input -->
+            <input 
+                type="text" 
+                class="title-input" 
+                placeholder="Enter title (optional)..." 
+                @bind="titleText" />
+            
+            <!-- Compact Mood Selection -->
+            <div class="mood-section-compact">
+                <div class="mood-row">
+                    <label class="mood-label-compact">
+                        <i class="fas fa-smile"></i> Mood <span class="required">*</span>
+                    </label>
+                    <select class="mood-dropdown-compact primary" @bind="primaryMood">
+                        <option value="">Select mood...</option>
+                        @foreach (var mood in MoodHelper.AvailableMoods)
+                        {
+                            <option value="@mood.Name">
+                                @mood.Name
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <div class="mood-row secondary-row">
+                    <label class="mood-label-compact secondary-label">
+                        <i class="fas fa-plus-circle"></i> Also feeling
+                    </label>
+                    <div class="secondary-moods-compact">
+                        <select class="mood-dropdown-compact" @bind="secondaryMood1">
+                            <option value="">Optional...</option>
+                            @foreach (var mood in MoodHelper.AvailableMoods)
+                            {
+                                <option value="@mood.Name">@mood.Name</option>
+                            }
+                        </select>
+                        
+                        <select class="mood-dropdown-compact" @bind="secondaryMood2">
+                            <option value="">Optional...</option>
+                            @foreach (var mood in MoodHelper.AvailableMoods)
+                            {
+                                <option value="@mood.Name">@mood.Name</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tag Input -->
+            <div class="tag-input-container">
+                <input 
+                    type="text" 
+                    class="tag-input" 
+                    placeholder="Add tags (press Enter or comma)..." 
+                    @bind="currentTagInput"
+                    @bind:event="oninput"
+                    @onkeydown="HandleTagKeyPress" />
+                
+                <div class="tags-display">
+                    @foreach (var tag in selectedTags)
+                    {
+                        <span class="tag-badge">
+                            @tag
+                            <button class="tag-remove" @onclick="() => RemoveTag(tag)">×</button>
+                        </span>
+                    }
+                </div>
+            </div>
+            
+            <!-- Rich Text Editor -->
+            <RichTextEditor @ref="richTextEditor" />
+            
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="error-message">@errorMessage</div>
+            }
+        </div>
+        
+        <div class="modal-actions">
+            <button class="save-btn" @onclick="SaveChanges">
+                <i class="fas fa-save"></i>
+                Save Changes
+            </button>
+            <button class="cancel-btn" @onclick="Close">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] 
+    public EventCallback<bool> OnClose { get; set; }
+
+    private bool _show = false;
+    private RichTextEditor? richTextEditor;
+    private JournalEntryModel? currentEntry;
+    
+    private string titleText = string.Empty;
+    private string primaryMood = string.Empty;
+    private string? secondaryMood1;
+    private string? secondaryMood2;
+    private string currentTagInput = string.Empty;
+    private List<string> selectedTags = new();
+    private string errorMessage = string.Empty;
+
+    public async Task ShowAsync(JournalEntryModel entry)
+    {
+        currentEntry = entry;
+        titleText = entry.Title;
+        primaryMood = entry.PrimaryMood;
+        secondaryMood1 = entry.SecondaryMood1;
+        secondaryMood2 = entry.SecondaryMood2;
+        selectedTags = entry.Tags.Select(t => t.Name).ToList();
+        
+        _show = true;
+        StateHasChanged();
+        
+        // Wait a bit for the modal to render
+        await Task.Delay(50);
+        
+        // Load the content into the editor
+        if (richTextEditor != null)
+        {
+            await richTextEditor.LoadHTMLContent(entry.Content);
+        }
+    }
+
+    public void Hide()
+    {
+        _show = false;
+        StateHasChanged();
+    }
+
+    private async Task Close()
+    {
+        await ClearForm();
+        _show = false;
+        await OnClose.InvokeAsync(false);
+    }
+
+    private async Task SaveChanges()
+    {
+        errorMessage = string.Empty;
+
+        if (richTextEditor == null || currentEntry == null)
+        {
+            errorMessage = "Editor not ready";
+            return;
+        }
+
+        var htmlContent = await richTextEditor.GetHTML();
+
+        if (string.IsNullOrWhiteSpace(htmlContent) || htmlContent == "<br>" || htmlContent == "<div><br></div>")
+        {
+            errorMessage = "Please write something before saving.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(primaryMood))
+        {
+            errorMessage = "Please select a primary mood.";
+            return;
+        }
+
+        // Add any pending tag
+        AddCurrentTag();
+
+        // Update the entry model with new values
+        currentEntry.Title = titleText;
+        currentEntry.Content = htmlContent;
+        currentEntry.PrimaryMood = primaryMood;
+        currentEntry.SecondaryMood1 = secondaryMood1;
+        currentEntry.SecondaryMood2 = secondaryMood2;
+        // Tags will be handled by the parent component
+
+        await ClearForm();
+        _show = false;
+        await OnClose.InvokeAsync(true);
+    }
+
+    private void HandleTagKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" || e.Key == ",")
+        {
+            AddCurrentTag();
+        }
+    }
+
+    private void AddCurrentTag()
+    {
+        var tag = currentTagInput.Trim().ToLower().Replace(",", "");
+        
+        if (!string.IsNullOrWhiteSpace(tag) && !selectedTags.Contains(tag))
+        {
+            selectedTags.Add(tag);
+            currentTagInput = string.Empty;
+        }
+    }
+
+    private void RemoveTag(string tag)
+    {
+        selectedTags.Remove(tag);
+    }
+
+    private async Task ClearForm()
+    {
+        titleText = string.Empty;
+        primaryMood = string.Empty;
+        secondaryMood1 = null;
+        secondaryMood2 = null;
+        selectedTags.Clear();
+        currentTagInput = string.Empty;
+        errorMessage = string.Empty;
+        currentEntry = null;
+        
+        if (richTextEditor != null)
+        {
+            await richTextEditor.Clear();
+        }
+    }
+
+    public List<string> GetSelectedTags()
+    {
+        return selectedTags;
+    }
+}

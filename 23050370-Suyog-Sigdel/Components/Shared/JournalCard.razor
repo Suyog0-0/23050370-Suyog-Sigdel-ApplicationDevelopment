@@ -1,7 +1,7 @@
 @using _23050370_Suyog_Sigdel.Models
 @using _23050370_Suyog_Sigdel.Helpers
 
-<div class="journal-card @(IsEditing ? "editing" : "")">
+<div class="journal-card">
     <div class="entry-header">
         <div class="header-info">
             @if (!string.IsNullOrWhiteSpace(Entry.Title))
@@ -70,9 +70,6 @@
 @code {
     [Parameter]
     public JournalEntryModel Entry { get; set; } = null!;
-
-    [Parameter]
-    public bool IsEditing { get; set; } = false;
 
     [Parameter]
     public EventCallback OnEdit { get; set; }
