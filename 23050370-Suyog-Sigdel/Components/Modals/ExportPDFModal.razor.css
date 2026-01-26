@@ -1,28 +1,23 @@
-/* ==================== COLOR THEME VARIABLES ==================== */
-
-/* BLUE THEME (Default) */
+/* Color Theme Variables */
 .theme-blue {
     --modal-primary-color: #3498db;
     --modal-primary-hover: #2980b9;
     --modal-primary-light: #e7f3ff;
 }
 
-/* SOFT GRAY THEME */
 .theme-soft-gray {
     --modal-primary-color: #95a5a6;
     --modal-primary-hover: #7f8c8d;
     --modal-primary-light: #ecf0f1;
 }
 
-/* DARK PURPLE THEME */
 .theme-dark-purple {
     --modal-primary-color: #8e44ad;
     --modal-primary-hover: #71368a;
     --modal-primary-light: #f4ecf7;
 }
 
-/* ==================== MODAL STYLES ==================== */
-
+/* Modal */
 .modal-backdrop {
     position: fixed;
     top: 0;
@@ -37,16 +32,12 @@
 }
 
 .modal-content.export-modal {
-    background: #ffffff;
+    background: white;
     border-radius: 12px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    max-width: 600px;
+    max-width: 550px;
     width: 90%;
-    font-family: system-ui, -apple-system, sans-serif;
     overflow: hidden;
-    max-height: 90vh;
-    display: flex;
-    flex-direction: column;
 }
 
 .modal-header {
@@ -56,8 +47,6 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    position: relative;
-    flex-shrink: 0;
 }
 
 .header-content {
@@ -66,13 +55,6 @@
     gap: 0.8rem;
     font-weight: 600;
     font-size: 1.2rem;
-    flex: 1;
-    padding-right: 2rem;
-}
-
-.header-content i {
-    font-size: 1.4rem;
-    flex-shrink: 0;
 }
 
 .modal-close {
@@ -88,9 +70,6 @@
     align-items: center;
     justify-content: center;
     transition: background 0.2s;
-    flex-shrink: 0;
-    line-height: 1;
-    padding: 0;
 }
 
 .modal-close:hover {
@@ -99,16 +78,14 @@
 
 .modal-body {
     padding: 1.5rem;
-    overflow-y: auto;
-    flex: 1;
 }
 
 .modal-description {
     color: #7f8c8d;
     margin-bottom: 1.5rem;
-    font-size: 0.95rem;
 }
 
+/* Date Inputs */
 .date-inputs {
     display: flex;
     gap: 1rem;
@@ -133,7 +110,6 @@
     border: 2px solid #e0e0e0;
     border-radius: 8px;
     font-size: 0.95rem;
-    transition: border-color 0.2s;
 }
 
 .date-input:focus {
@@ -141,6 +117,7 @@
     border-color: var(--modal-primary-color, #3498db);
 }
 
+/* Error */
 .error-message {
     background: #fee;
     color: #e74c3c;
@@ -150,6 +127,7 @@
     font-size: 0.9rem;
 }
 
+/* Loading */
 .export-progress {
     display: flex;
     flex-direction: column;
@@ -171,12 +149,7 @@
     to { transform: rotate(360deg); }
 }
 
-.export-progress p {
-    color: #7f8c8d;
-    margin: 0;
-}
-
-/* Success Content */
+/* Success */
 .success-content {
     text-align: center;
     padding: 1rem 0;
@@ -197,7 +170,6 @@
 .success-message {
     color: #7f8c8d;
     margin-bottom: 1.5rem;
-    font-size: 0.95rem;
 }
 
 .file-info {
@@ -213,17 +185,12 @@
 
 .file-icon {
     font-size: 2.5rem;
-    color: #e74c3c;
+    color: var(--modal-primary-color, #3498db);
     flex-shrink: 0;
-    margin-top: 0.2rem;
 }
 
 .file-details {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    min-width: 0;
     overflow: hidden;
 }
 
@@ -231,26 +198,22 @@
     color: #2c3e50;
     font-size: 0.95rem;
     font-weight: 600;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
+    display: block;
+    margin-bottom: 0.5rem;
 }
 
 .file-location-text {
     color: #7f8c8d;
     font-size: 0.7rem;
-    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
+    font-family: monospace;
     word-break: break-all;
-    line-height: 1.5;
-    white-space: normal;
 }
 
+/* Actions */
 .modal-actions {
-    padding: 0 1.5rem 1.5rem 1.5rem;
+    padding: 0 1.5rem 1.5rem;
     display: flex;
     gap: 0.8rem;
-    flex-shrink: 0;
 }
 
 .export-btn,
@@ -268,7 +231,6 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    font-size: 0.95rem;
 }
 
 .export-btn {
@@ -279,7 +241,6 @@
 .export-btn:hover:not(:disabled) {
     background: #1e874a;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
 }
 
 .export-btn:disabled {
@@ -296,11 +257,6 @@
     background: #7f8c8d;
 }
 
-.cancel-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
 .open-btn {
     background: var(--modal-primary-color, #3498db);
     color: white;
@@ -309,7 +265,6 @@
 .open-btn:hover {
     background: var(--modal-primary-hover, #2980b9);
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
 }
 
 .done-btn {
@@ -321,8 +276,7 @@
     background: #7f8c8d;
 }
 
-/* ==================== DARK MODE ==================== */
-
+/* Dark Mode */
 .dark.modal-content.export-modal {
     background: #2a2a2a;
 }
@@ -339,10 +293,6 @@
     background: #1a1a1a;
     border-color: #444;
     color: #e0e0e0;
-}
-
-.dark .date-input:focus {
-    border-color: var(--modal-primary-color, #3498db);
 }
 
 .dark .success-content h3 {
@@ -366,10 +316,9 @@
     color: #adb5bd;
 }
 
-/* ==================== MOBILE RESPONSIVE ==================== */
-
+/* Mobile */
 @media (max-width: 768px) {
-    .date-inputs {
+    .date-inputs { 
         flex-direction: column;
     }
 
@@ -379,29 +328,5 @@
 
     .modal-actions {
         flex-direction: column;
-    }
-
-    .success-icon {
-        font-size: 3rem;
-    }
-
-    .modal-body {
-        padding: 1.2rem;
-    }
-
-    .header-content {
-        font-size: 1.1rem;
-    }
-
-    .header-content i {
-        font-size: 1.2rem;
-    }
-
-    .file-icon {
-        font-size: 2rem;
-    }
-
-    .file-location-text {
-        font-size: 0.65rem;
     }
 }

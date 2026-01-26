@@ -43,7 +43,7 @@
                 {
                     <div class="export-progress">
                         <div class="spinner"></div>
-                        <p>Generating PDF...</p>
+                        <p>Exporting PDFs...</p>
                     </div>
                 }
             }
@@ -54,13 +54,15 @@
                         <i class="fas fa-check-circle"></i>
                     </div>
                     <h3>Export Successful!</h3>
-                    <p class="success-message">Your journal has been exported to PDF successfully.</p>
+                    <p class="success-message">
+                        Exported <strong>@entryCount</strong> @(entryCount == 1 ? "entry" : "entries") to PDF successfully.
+                    </p>
                     
                     <div class="file-info">
-                        <i class="fas fa-file-pdf file-icon"></i>
+                        <i class="fas fa-folder file-icon"></i>
                         <div class="file-details">
-                            <strong class="file-name">@Path.GetFileName(exportedFilePath)</strong>
-                            <div class="file-location-text">@exportedFilePath</div>
+                            <strong class="file-name">@Path.GetFileName(exportedFolderPath)</strong>
+                            <div class="file-location-text">@exportedFolderPath</div>
                         </div>
                     </div>
                 </div>
@@ -80,9 +82,9 @@
             }
             else
             {
-                <button class="open-btn" @onclick="OpenFile">
-                    <i class="fas fa-external-link-alt"></i>
-                    Open PDF
+                <button class="open-btn" @onclick="OpenFolder">
+                    <i class="fas fa-folder-open"></i>
+                    Open Folder
                 </button>
                 <button class="done-btn" @onclick="Close">
                     Done
@@ -102,7 +104,8 @@
     private string errorMessage = string.Empty;
     private bool isExporting = false;
     private bool exportSuccess = false;
-    private string exportedFilePath = string.Empty;
+    private string exportedFolderPath = string.Empty;
+    private int entryCount = 0;
 
     public void Show()
     {
@@ -111,7 +114,8 @@
         endDate = DateTime.Today;
         errorMessage = string.Empty;
         exportSuccess = false;
-        exportedFilePath = string.Empty;
+        exportedFolderPath = string.Empty;
+        entryCount = 0;
         StateHasChanged();
     }
 
@@ -135,14 +139,19 @@
         if (startDate > endDate)
         {
             errorMessage = "Start date must be before end date";
+            Console.WriteLine("[Export Modal] Error: Start date after end date");
             return;
         }
 
         if (endDate > DateTime.Today)
         {
             errorMessage = "End date cannot be in the future";
+            Console.WriteLine("[Export Modal] Error: End date in future");
             return;
         }
+
+        Console.WriteLine($"[Export Modal] Start Date (DateTime): {startDate}");
+        Console.WriteLine($"[Export Modal] End Date (DateTime): {endDate}");
 
         isExporting = true;
         StateHasChanged();
@@ -152,42 +161,67 @@
             var startDateOnly = DateOnly.FromDateTime(startDate);
             var endDateOnly = DateOnly.FromDateTime(endDate);
 
-            var pdfPath = await PDFExportService.ExportEntriesByDateRangeAsync(startDateOnly, endDateOnly);
+            Console.WriteLine($"[Export Modal] Start Date (DateOnly): {startDateOnly}");
+            Console.WriteLine($"[Export Modal] End Date (DateOnly): {endDateOnly}");
+            Console.WriteLine($"[Export Modal] Calling export service...");
 
-            if (string.IsNullOrEmpty(pdfPath))
+            var (count, folderPath) = await PDFExportService.ExportByDateRangeAsync(startDateOnly, endDateOnly);
+
+            Console.WriteLine($"[Export Modal] Service returned - Count: {count}, Path: {folderPath}");
+
+            if (count == 0 || string.IsNullOrEmpty(folderPath))
             {
                 errorMessage = "No entries found in the selected date range";
+                Console.WriteLine("[Export Modal] No entries found");
                 isExporting = false;
                 return;
             }
 
-            exportedFilePath = pdfPath;
+            entryCount = count;
+            exportedFolderPath = folderPath;
             exportSuccess = true;
             isExporting = false;
+            Console.WriteLine($"[Export Modal] Export successful! {count} entries exported");
             StateHasChanged();
         }
         catch (Exception ex)
         {
             errorMessage = $"Export failed: {ex.Message}";
+            Console.WriteLine($"[Export Modal] Exception: {ex.Message}");
+            Console.WriteLine($"[Export Modal] Stack: {ex.StackTrace}");
             isExporting = false;
             StateHasChanged();
         }
     }
 
-    private async Task OpenFile()
+    private async Task OpenFolder()
     {
         try
         {
-            // Open the PDF file directly
             await Launcher.OpenAsync(new OpenFileRequest
             {
-                File = new ReadOnlyFile(exportedFilePath)
+                File = new ReadOnlyFile(exportedFolderPath)
             });
         }
-        catch (Exception ex)
+        catch
         {
-            errorMessage = $"Could not open PDF: {ex.Message}";
-            StateHasChanged();
+            // If opening folder fails, try opening the directory
+            try
+            {
+                var firstFile = Directory.GetFiles(exportedFolderPath).FirstOrDefault();
+                if (firstFile != null)
+                {
+                    await Launcher.OpenAsync(new OpenFileRequest
+                    {
+                        File = new ReadOnlyFile(firstFile)
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                errorMessage = $"Could not open folder: {ex.Message}";
+                StateHasChanged();
+            }
         }
     }
 }
