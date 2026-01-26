@@ -1,259 +1,148 @@
-/* ==================== LIGHT MODE ==================== */
-.rte-wrapper {
+/* ==================== QUILL WRAPPER ==================== */
+.quill-editor {
+    min-height: 220px;
+    max-height: 500px;
     border: 2px solid #e0e0e0;
     border-radius: 12px;
-    overflow: hidden;
     background: #ffffff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.rte-wrapper:focus-within {
+/* IMPORTANT: DO NOT hide overflow (breaks toolbar) */
+.quill-editor:focus-within {
     border-color: var(--primary-color, #3498db);
     box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
 }
 
-.rte-toolbar {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 12px 16px;
+/* ==================== QUILL BASE FIXES ==================== */
+
+/* Ensure toolbar is visible */
+:global(.ql-toolbar) {
+    display: block;
+}
+
+/* Ensure editor has height */
+:global(.ql-container) {
+    min-height: 200px;
+    height: auto;
+}
+
+/* Remove default Quill borders (we use wrapper border) */
+:global(.ql-container.ql-snow),
+:global(.ql-toolbar.ql-snow) {
+    border: none !important;
+}
+
+/* ==================== TOOLBAR ==================== */
+:global(.ql-toolbar.ql-snow) {
     background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
-    border-bottom: 1px solid #dee2e6;
-    flex-wrap: wrap;
+    border-bottom: 1px solid #dee2e6 !important;
+    padding: 10px 14px;
+    border-radius: 12px 12px 0 0;
 }
 
-.toolbar-btn {
-    padding: 8px 12px;
-    border: 1px solid #ced4da;
-    background: #ffffff;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 15px;
-    color: #495057;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 36px;
-    height: 36px;
-}
-
-.toolbar-btn:hover {
-    background: var(--primary-light, #e7f3ff);
-    border-color: var(--primary-color, #3498db);
-    color: var(--primary-color, #3498db);
-    transform: translateY(-1px);
-}
-
-.toolbar-btn:active {
-    background: #cce5ff;
-    transform: translateY(0);
-}
-
-.heading-label {
-    font-weight: 700;
-    font-size: 13px;
-}
-
-.toolbar-divider {
-    width: 1px;
-    height: 24px;
-    background: #dee2e6;
-    margin: 0 4px;
-}
-
-.rte-editor {
-    min-height: 220px;
-    max-height: 500px;
-    padding: 20px;
-    outline: none;
+/* ==================== EDITOR ==================== */
+:global(.ql-editor) {
+    min-height: 180px;
+    padding: 18px;
     font-size: 16px;
-    line-height: 1.7;
+    line-height: 1.6;
     color: #212529;
-    background: #ffffff;
-    overflow-y: auto;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 
-.rte-editor:empty:before {
-    content: attr(placeholder);
+/* Placeholder */
+:global(.ql-editor.ql-blank::before) {
     color: #adb5bd;
     font-style: italic;
 }
 
-/* ==================== DARK MODE ==================== */
-.dark .rte-wrapper {
-    border: 2px solid #444444;
-    background: #1a1a1a;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+/* ==================== ICON FIX (VERY IMPORTANT) ==================== */
+/* Without this, icons show as triangles */
+:global(.ql-snow .ql-stroke) {
+    stroke: #495057;
 }
 
-.dark .rte-wrapper:focus-within {
-    border-color: var(--primary-color, #3498db);
-    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+:global(.ql-snow .ql-fill) {
+    fill: #495057;
 }
 
-.dark .rte-toolbar {
-    background: linear-gradient(to bottom, #2d2d2d, #252525);
-    border-bottom: 1px solid #3a3a3a;
+:global(.ql-snow .ql-picker-label) {
+    color: #495057;
 }
 
-.dark .toolbar-btn {
-    border: 1px solid #3a3a3a;
-    background: #2a2a2a;
-    color: #e0e0e0;
-}
-
-.dark .toolbar-btn:hover {
-    background: #1e3a5f;
-    border-color: var(--primary-color, #3498db);
-    color: #5dade2;
-}
-
-.dark .toolbar-btn:active {
-    background: #2c5282;
-}
-
-.dark .toolbar-divider {
-    background: #444444;
-}
-
-.dark .rte-editor {
-    color: #e0e0e0;
-    background: #1a1a1a;
-}
-
-.dark .rte-editor:empty:before {
-    color: #6c757d;
-}
-
-/* ==================== FORMATTING STYLES ==================== */
-.rte-editor b,
-.rte-editor strong {
-    font-weight: 700;
-}
-
-.rte-editor i,
-.rte-editor em {
-    font-style: italic;
-}
-
-.rte-editor u {
-    text-decoration: underline;
-}
-
-.rte-editor ul,
-.rte-editor ol {
-    margin: 12px 0;
-    padding-left: 28px;
-}
-
-.rte-editor li {
-    margin: 6px 0;
-}
-
-.rte-editor p {
-    margin: 8px 0;
-}
-
-/* Heading Styles */
-.rte-editor h1 {
-    font-size: 2em;
-    font-weight: 700;
-    margin: 16px 0 12px 0;
-    color: #2c3e50;
-}
-
-.rte-editor h2 {
-    font-size: 1.5em;
-    font-weight: 700;
-    margin: 14px 0 10px 0;
-    color: #34495e;
-}
-
-.rte-editor h3 {
-    font-size: 1.25em;
-    font-weight: 600;
-    margin: 12px 0 8px 0;
-    color: #34495e;
-}
-
-/* Link Styles */
-.rte-editor a {
+/* Hover / active */
+:global(.ql-toolbar button:hover),
+:global(.ql-toolbar button.ql-active) {
     color: var(--primary-color, #3498db);
-    text-decoration: underline;
-    cursor: pointer;
 }
 
-.rte-editor a:hover {
-    color: var(--primary-hover, #2980b9);
+:global(.ql-toolbar button:hover .ql-stroke),
+:global(.ql-toolbar button.ql-active .ql-stroke) {
+    stroke: var(--primary-color, #3498db);
 }
 
-/* Dark mode headings */
-.dark .rte-editor h1 {
+:global(.ql-toolbar button:hover .ql-fill),
+:global(.ql-toolbar button.ql-active .ql-fill) {
+    fill: var(--primary-color, #3498db);
+}
+
+/* ==================== DARK MODE ==================== */
+.dark .quill-editor {
+    border-color: #444;
+    background: #1a1a1a;
+}
+
+.dark .quill-editor:focus-within {
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.35);
+}
+
+:global(.dark .ql-toolbar.ql-snow) {
+    background: linear-gradient(to bottom, #2c2c2c, #242424);
+    border-bottom: 1px solid #3a3a3a !important;
+}
+
+:global(.dark .ql-editor) {
     color: #e0e0e0;
 }
 
-.dark .rte-editor h2 {
-    color: #d0d0d0;
+:global(.dark .ql-editor.ql-blank::before) {
+    color: #777;
 }
 
-.dark .rte-editor h3 {
-    color: #d0d0d0;
+:global(.dark .ql-snow .ql-stroke) {
+    stroke: #e0e0e0;
 }
 
-/* Dark mode links */
-.dark .rte-editor a {
-    color: #5dade2;
+:global(.dark .ql-snow .ql-fill) {
+    fill: #e0e0e0;
 }
 
-.dark .rte-editor a:hover {
-    color: #85c1e9;
+:global(.dark .ql-picker-label) {
+    color: #e0e0e0;
 }
 
 /* ==================== SCROLLBAR ==================== */
-/* Light mode scrollbar */
-.rte-editor::-webkit-scrollbar {
+:global(.ql-editor)::-webkit-scrollbar {
     width: 8px;
 }
 
-.rte-editor::-webkit-scrollbar-track {
-    background: #f1f3f5;
-}
-
-.rte-editor::-webkit-scrollbar-thumb {
+:global(.ql-editor)::-webkit-scrollbar-thumb {
     background: #ced4da;
     border-radius: 4px;
 }
 
-.rte-editor::-webkit-scrollbar-thumb:hover {
-    background: #adb5bd;
+:global(.dark .ql-editor)::-webkit-scrollbar-thumb {
+    background: #555;
 }
 
-/* Dark mode scrollbar */
-.dark .rte-editor::-webkit-scrollbar-track {
-    background: #0d0d0d;
-}
-
-.dark .rte-editor::-webkit-scrollbar-thumb {
-    background: #4a4a4a;
-}
-
-.dark .rte-editor::-webkit-scrollbar-thumb:hover {
-    background: #5a5a5a;
-}
-
-/* Responsive */
+/* ==================== RESPONSIVE ==================== */
 @media (max-width: 768px) {
-    .rte-toolbar {
-        gap: 4px;
-        padding: 10px 12px;
+    .quill-editor {
+        min-height: 180px;
     }
 
-    .toolbar-btn {
-        min-width: 32px;
-        height: 32px;
-        padding: 6px 10px;
+    :global(.ql-editor) {
+        font-size: 15px;
+        padding: 14px;
     }
 }

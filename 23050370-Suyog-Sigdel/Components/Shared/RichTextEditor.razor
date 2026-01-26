@@ -1,151 +1,94 @@
 @inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
 
-<div class="rte-wrapper">
-    <div class="rte-toolbar">
-        <button type="button" @onclick="MakeBold" class="toolbar-btn" title="Bold">
-            <i class="fa fa-bold"></i>
-        </button>
-        <button type="button" @onclick="MakeItalic" class="toolbar-btn" title="Italic">
-            <i class="fa fa-italic"></i>
-        </button>
-        <button type="button" @onclick="MakeUnderline" class="toolbar-btn" title="Underline">
-            <i class="fa fa-underline"></i>
-        </button>
-        
-        <div class="toolbar-divider"></div>
-        
-        <button type="button" @onclick="MakeHeading1" class="toolbar-btn" title="Heading 1">
-            <span class="heading-label">H1</span>
-        </button>
-        <button type="button" @onclick="MakeHeading2" class="toolbar-btn" title="Heading 2">
-            <span class="heading-label">H2</span>
-        </button>
-        <button type="button" @onclick="MakeHeading3" class="toolbar-btn" title="Heading 3">
-            <span class="heading-label">H3</span>
-        </button>
-        
-        <div class="toolbar-divider"></div>
-        
-        <button type="button" @onclick="MakeBulletList" class="toolbar-btn" title="Bullet List">
-            <i class="fa fa-list-ul"></i>
-        </button>
-        <button type="button" @onclick="MakeNumberList" class="toolbar-btn" title="Numbered List">
-            <i class="fa fa-list-ol"></i>
-        </button>
-        
-        <div class="toolbar-divider"></div>
-        
-        <button type="button" @onclick="InsertLink" class="toolbar-btn" title="Insert Link">
-            <i class="fa fa-link"></i>
-        </button>
-    </div>
-    
-    <div @ref="editorElement" 
-         class="rte-editor" 
-         contenteditable="true"
-         @oninput="HandleInput"
-         placeholder="Write your journal entry here...">
-    </div>
-</div>
+<div id="@editorId" class="quill-editor"></div>
 
 @code {
-    private ElementReference editorElement;
-    private string htmlContent = string.Empty;
+    private string editorId = $"quill-{Guid.NewGuid():N}";
+    private DotNetObjectReference<RichTextEditor>? dotNetRef;
+    private bool isInitialized = false;
 
     [Parameter]
     public EventCallback<string> OnContentChanged { get; set; }
 
-    private async Task MakeBold()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await JSRuntime.InvokeVoidAsync("eval", "document.execCommand('bold', false, null)");
-    }
-
-    private async Task MakeItalic()
-    {
-        await JSRuntime.InvokeVoidAsync("eval", "document.execCommand('italic', false, null)");
-    }
-
-    private async Task MakeUnderline()
-    {
-        await JSRuntime.InvokeVoidAsync("eval", "document.execCommand('underline', false, null)");
-    }
-
-    private async Task MakeHeading1()
-    {
-        await JSRuntime.InvokeVoidAsync("eval", "document.execCommand('formatBlock', false, '<h1>')");
-    }
-
-    private async Task MakeHeading2()
-    {
-        await JSRuntime.InvokeVoidAsync("eval", "document.execCommand('formatBlock', false, '<h2>')");
-    }
-
-    private async Task MakeHeading3()
-    {
-        await JSRuntime.InvokeVoidAsync("eval", "document.execCommand('formatBlock', false, '<h3>')");
-    }
-
-    private async Task MakeBulletList()
-    {
-        await JSRuntime.InvokeVoidAsync("eval", "document.execCommand('insertUnorderedList', false, null)");
-    }
-
-    private async Task MakeNumberList()
-    {
-        await JSRuntime.InvokeVoidAsync("eval", "document.execCommand('insertOrderedList', false, null)");
-    }
-
-    private async Task InsertLink()
-    {
-        await JSRuntime.InvokeVoidAsync("eval", @"
-            const url = prompt('Enter URL:', 'https://');
-            if (url && url.trim() !== '' && url !== 'https://') {
-                document.execCommand('createLink', false, url);
+        if (firstRender)
+        {
+            dotNetRef = DotNetObjectReference.Create(this);
+            try
+            {
+                isInitialized = await JSRuntime.InvokeAsync<bool>("initQuill", editorId, dotNetRef);
             }
-        ");
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error initializing Quill: {ex.Message}");
+            }
+        }
     }
 
-    private async Task HandleInput()
+    [JSInvokable]
+    public async Task HandleContentChange(string html)
     {
-        try
-        {
-            htmlContent = await JSRuntime.InvokeAsync<string>("eval", "document.querySelector('.rte-editor').innerHTML");
-            await OnContentChanged.InvokeAsync(htmlContent);
-        }
-        catch
-        {
-            // Ignore errors during input
-        }
+        await OnContentChanged.InvokeAsync(html);
     }
 
     public async Task<string> GetHTML()
     {
+        if (!isInitialized) return string.Empty;
+        
         try
         {
-            htmlContent = await JSRuntime.InvokeAsync<string>("eval", "document.querySelector('.rte-editor').innerHTML");
-            return htmlContent;
+            return await JSRuntime.InvokeAsync<string>("getQuillContent", editorId);
         }
         catch
         {
-            return htmlContent;
+            return string.Empty;
         }
     }
 
     public async Task LoadHTMLContent(string html)
     {
-        htmlContent = html ?? string.Empty;
+        if (!isInitialized)
+        {
+            await Task.Delay(100);
+        }
+
         try
         {
-            await JSRuntime.InvokeVoidAsync("eval", $"document.querySelector('.rte-editor').innerHTML = `{htmlContent}`");
+            await JSRuntime.InvokeVoidAsync("setQuillContent", editorId, html ?? string.Empty);
         }
-        catch
+        catch (Exception ex)
         {
-            // Ignore if element not ready
+            Console.WriteLine($"Error loading content: {ex.Message}");
         }
     }
 
     public async Task Clear()
     {
-        await LoadHTMLContent(string.Empty);
+        if (!isInitialized) return;
+        
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("clearQuill", editorId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error clearing editor: {ex.Message}");
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        dotNetRef?.Dispose();
+        
+        if (isInitialized)
+        {
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("eval", $"delete window.quillEditors['{editorId}']");
+            }
+            catch { }
+        }
     }
 }
