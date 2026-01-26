@@ -1,104 +1,168 @@
-/* ==================== QUILL WRAPPER ==================== */
-.quill-editor {
-    min-height: 220px;
-    max-height: 500px;
+/* Wrapper */
+.quill-wrapper {
     border: 2px solid #e0e0e0;
-    border-radius: 12px;
-    background: #ffffff;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 10px;
+    background: white;
+    transition: all 0.2s;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 320px;
 }
 
-/* IMPORTANT: DO NOT hide overflow (breaks toolbar) */
-.quill-editor:focus-within {
+.quill-wrapper:focus-within {
     border-color: var(--primary-color, #3498db);
-    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
-/* ==================== QUILL BASE FIXES ==================== */
-
-/* Ensure toolbar is visible */
-:global(.ql-toolbar) {
-    display: block;
-}
-
-/* Ensure editor has height */
-:global(.ql-container) {
-    min-height: 200px;
-    height: auto;
-}
-
-/* Remove default Quill borders (we use wrapper border) */
-:global(.ql-container.ql-snow),
-:global(.ql-toolbar.ql-snow) {
+/* Remove default Quill borders */
+:global(.ql-toolbar.ql-snow),
+:global(.ql-container.ql-snow) {
     border: none !important;
 }
 
-/* ==================== TOOLBAR ==================== */
+/* Toolbar */
 :global(.ql-toolbar.ql-snow) {
-    background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
-    border-bottom: 1px solid #dee2e6 !important;
-    padding: 10px 14px;
-    border-radius: 12px 12px 0 0;
+    background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 14px 16px;
+    border-bottom: 1px solid #dee2e6;
+    flex-shrink: 0;
 }
 
-/* ==================== EDITOR ==================== */
+/* Container */
+:global(.ql-container.ql-snow) {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Editor */
 :global(.ql-editor) {
-    min-height: 180px;
-    padding: 18px;
+    flex: 1;
+    min-height: 260px;
+    height: auto;
+    padding: 18px 20px;
     font-size: 16px;
-    line-height: 1.6;
-    color: #212529;
+    line-height: 1.7;
+    color: #2c3e50;
+    overflow-y: auto;
 }
 
-/* Placeholder */
+:global(.ql-editor):focus {
+    outline: none;
+}
+
+/* Text selection styling */
+:global(.ql-editor ::selection) {
+    background: rgba(52, 152, 219, 0.3);
+    color: inherit;
+}
+
+:global(.ql-editor ::-moz-selection) {
+    background: rgba(52, 152, 219, 0.3);
+    color: inherit;
+}
+
+/* Placeholder - FIXED */
 :global(.ql-editor.ql-blank::before) {
-    color: #adb5bd;
+    color: white !important;
     font-style: italic;
+    opacity: 1 !important;
+    left: 20px;
+    right: 20px;
+    pointer-events: none;
 }
 
-/* ==================== ICON FIX (VERY IMPORTANT) ==================== */
-/* Without this, icons show as triangles */
+/* Ensure placeholder disappears when there's content */
+:global(.ql-editor:not(.ql-blank)::before) {
+    display: none !important;
+}
+
+/* Toolbar buttons */
 :global(.ql-snow .ql-stroke) {
-    stroke: #495057;
+    stroke: #555;
 }
 
 :global(.ql-snow .ql-fill) {
-    fill: #495057;
+    fill: #555;
 }
 
-:global(.ql-snow .ql-picker-label) {
-    color: #495057;
+:global(.ql-toolbar button) {
+    width: 28px;
+    height: 28px;
+    padding: 3px;
+    margin: 0 2px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    cursor: pointer;
 }
 
-/* Hover / active */
-:global(.ql-toolbar button:hover),
+:global(.ql-toolbar button:hover) {
+    background: rgba(52, 152, 219, 0.1);
+}
+
+:global(.ql-toolbar button:hover .ql-stroke) {
+    stroke: var(--primary-color, #3498db);
+}
+
+:global(.ql-toolbar button:hover .ql-fill) {
+    fill: var(--primary-color, #3498db);
+}
+
 :global(.ql-toolbar button.ql-active) {
-    color: var(--primary-color, #3498db);
+    background: rgba(52, 152, 219, 0.2);
 }
 
-:global(.ql-toolbar button:hover .ql-stroke),
 :global(.ql-toolbar button.ql-active .ql-stroke) {
     stroke: var(--primary-color, #3498db);
 }
 
-:global(.ql-toolbar button:hover .ql-fill),
 :global(.ql-toolbar button.ql-active .ql-fill) {
     fill: var(--primary-color, #3498db);
 }
 
-/* ==================== DARK MODE ==================== */
-.dark .quill-editor {
-    border-color: #444;
-    background: #1a1a1a;
+/* Ensure toolbar buttons are clickable */
+:global(.ql-toolbar) {
+    user-select: none;
+    -webkit-user-select: none;
 }
 
-.dark .quill-editor:focus-within {
-    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.35);
+:global(.ql-toolbar button) {
+    pointer-events: auto;
+}
+
+/* Content styles */
+:global(.ql-editor strong) {
+    font-weight: bold;
+}
+
+:global(.ql-editor em) {
+    font-style: italic;
+}
+
+:global(.ql-editor u) {
+    text-decoration: underline;
+}
+
+:global(.ql-editor a) {
+    color: var(--primary-color, #3498db);
+    text-decoration: underline;
+}
+
+/* Dark mode */
+.dark .quill-wrapper {
+    background: #1a1a1a;
+    border-color: #444;
+}
+
+.dark .quill-wrapper:focus-within {
+    border-color: var(--primary-color, #3498db);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
 }
 
 :global(.dark .ql-toolbar.ql-snow) {
-    background: linear-gradient(to bottom, #2c2c2c, #242424);
-    border-bottom: 1px solid #3a3a3a !important;
+    background: linear-gradient(180deg, #2a2a2a 0%, #242424 100%);
+    border-bottom-color: #3a3a3a;
 }
 
 :global(.dark .ql-editor) {
@@ -106,48 +170,41 @@
 }
 
 :global(.dark .ql-editor.ql-blank::before) {
-    color: #777;
+    color: white !important;
+    opacity: 0.7 !important;
+}
+
+/* Ensure placeholder disappears in dark mode too */
+:global(.dark .ql-editor:not(.ql-blank)::before) {
+    display: none !important;
 }
 
 :global(.dark .ql-snow .ql-stroke) {
-    stroke: #e0e0e0;
+    stroke: #ccc;
 }
 
 :global(.dark .ql-snow .ql-fill) {
-    fill: #e0e0e0;
+    fill: #ccc;
 }
 
-:global(.dark .ql-picker-label) {
-    color: #e0e0e0;
-}
-
-/* ==================== SCROLLBAR ==================== */
-:global(.ql-editor)::-webkit-scrollbar {
-    width: 8px;
-}
-
-:global(.ql-editor)::-webkit-scrollbar-thumb {
-    background: #ced4da;
-    border-radius: 4px;
-}
-
-:global(.dark .ql-editor)::-webkit-scrollbar-thumb {
-    background: #555;
-}
-
-/* ==================== RESPONSIVE ==================== */
+/* Mobile responsive */
 @media (max-width: 768px) {
-    .quill-editor {
-        min-height: 180px;
+    .quill-wrapper {
+        min-height: 280px;
     }
 
     :global(.ql-editor) {
+        min-height: 220px;
+        padding: 14px 16px;
         font-size: 15px;
-        padding: 14px;
     }
-}
 
-.ql-editor a {
-    cursor: pointer;
-    text-decoration: underline;
+    :global(.ql-toolbar.ql-snow) {
+        padding: 10px 12px;
+    }
+
+    :global(.ql-editor.ql-blank::before) {
+        left: 16px;
+        right: 16px;
+    }
 }

@@ -1,86 +1,79 @@
 @inject IJSRuntime JSRuntime
 @implements IAsyncDisposable
 
-<div id="@editorId" class="quill-editor"></div>
+<div id="@editorId" class="quill-wrapper"></div>
 
 @code {
     private string editorId = $"quill-{Guid.NewGuid():N}";
     private DotNetObjectReference<RichTextEditor>? dotNetRef;
-    private bool isInitialized;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender) return;
 
-        Console.WriteLine($"[RTE] Rendering editor {editorId}");
-
         dotNetRef = DotNetObjectReference.Create(this);
 
         try
         {
-            isInitialized = await JSRuntime.InvokeAsync<bool>(
-                "initQuill",
-                editorId,
-                dotNetRef
-            );
-
-            Console.WriteLine($"[RTE] Quill initialized = {isInitialized}");
+            await JSRuntime.InvokeVoidAsync("initQuillEditor", editorId);
         }
         catch (Exception ex)
         {
-            Console.WriteLine("[RTE] JS init error: " + ex.Message);
+            Console.WriteLine($"[RTE Error]: {ex.Message}");
         }
     }
 
     [JSInvokable]
-    public Task HandleContentChange(string html)
+    public Task OnContentChange(string html)
     {
-        Console.WriteLine("[RTE] Content length:", html?.Length);
         return Task.CompletedTask;
     }
 
     public async Task<string> GetHTML()
     {
-        Console.WriteLine("[RTE] GetHTML called");
-
-        if (!isInitialized) return string.Empty;
-
-        return await JSRuntime.InvokeAsync<string>(
-            "getQuillContent",
-            editorId
-        );
+        try
+        {
+            return await JSRuntime.InvokeAsync<string>("getQuillHTML", editorId);
+        }
+        catch
+        {
+            return string.Empty;
+        }
     }
 
     public async Task LoadHTMLContent(string html)
     {
-        Console.WriteLine("[RTE] LoadHTMLContent");
-
-        if (!isInitialized)
-            await Task.Delay(100);
-
-        await JSRuntime.InvokeVoidAsync(
-            "setQuillContent",
-            editorId,
-            html
-        );
+        try
+        {
+            await Task.Delay(150); // Wait for editor to be ready
+            await JSRuntime.InvokeVoidAsync("setQuillHTML", editorId, html ?? "");
+            await Task.Delay(50); // Allow history clear to complete
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[RTE Load Error]: {ex.Message}");
+        }
     }
 
     public async Task Clear()
     {
-        Console.WriteLine("[RTE] Clear called");
-
-        if (isInitialized)
-            await JSRuntime.InvokeVoidAsync("clearQuill", editorId);
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("clearQuillEditor", editorId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[RTE Clear Error]: {ex.Message}");
+        }
     }
 
     public async ValueTask DisposeAsync()
     {
-        Console.WriteLine("[RTE] Dispose");
-
-        dotNetRef?.Dispose();
-        await JSRuntime.InvokeVoidAsync(
-            "eval",
-            $"delete window.quillEditors['{editorId}']"
-        );
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("destroyQuillEditor", editorId);
+            dotNetRef?.Dispose();
+        }
+        catch { }
     }
 }
