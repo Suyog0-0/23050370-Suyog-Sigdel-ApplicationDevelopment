@@ -1,54 +1,58 @@
 window.quillEditors = {};
 
 window.initQuill = (editorId, dotNetRef) => {
+    console.log("[Quill] initQuill called:", editorId);
+
     const container = document.getElementById(editorId);
     if (!container) {
-        console.error('Quill container not found:', editorId);
+        console.error("[Quill] Container NOT found:", editorId);
         return false;
     }
 
+    console.log("[Quill] Container found");
+
     const quill = new Quill(container, {
         theme: 'snow',
+        placeholder: 'Write your journal entry here...',
         modules: {
             toolbar: [
                 ['bold', 'italic', 'underline'],
-                [{ 'header': [1, 2, 3, false] }],
-                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                [{ header: [1, 2, 3, false] }],
+                [{ list: 'ordered' }, { list: 'bullet' }],
                 ['link'],
                 ['clean']
             ]
-        },
-        placeholder: 'Write your journal entry here...'
+        }
     });
 
-    // Store the editor instance
+    console.log("[Quill] Editor initialized");
+
     window.quillEditors[editorId] = quill;
 
-    // Notify Blazor on content change
     quill.on('text-change', () => {
-        if (dotNetRef) {
-            dotNetRef.invokeMethodAsync('HandleContentChange', quill.root.innerHTML);
-        }
+        console.log("[Quill] Content changed");
+        dotNetRef?.invokeMethodAsync(
+            'HandleContentChange',
+            quill.root.innerHTML
+        );
     });
 
     return true;
 };
 
 window.getQuillContent = (editorId) => {
-    const quill = window.quillEditors[editorId];
-    return quill ? quill.root.innerHTML : '';
+    console.log("[Quill] getQuillContent:", editorId);
+    return window.quillEditors[editorId]?.root.innerHTML || '';
 };
 
 window.setQuillContent = (editorId, html) => {
-    const quill = window.quillEditors[editorId];
-    if (quill) {
-        quill.root.innerHTML = html || '';
-    }
+    console.log("[Quill] setQuillContent:", editorId);
+    const q = window.quillEditors[editorId];
+    if (q) q.root.innerHTML = html;
 };
 
 window.clearQuill = (editorId) => {
-    const quill = window.quillEditors[editorId];
-    if (quill) {
-        quill.setText('');
-    }
+    console.log("[Quill] clearQuill:", editorId);
+    const q = window.quillEditors[editorId];
+    if (q) q.setText('');
 };
