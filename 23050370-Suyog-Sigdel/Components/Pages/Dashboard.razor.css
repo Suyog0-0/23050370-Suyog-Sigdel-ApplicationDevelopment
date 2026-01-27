@@ -2,6 +2,7 @@
     max-width: 1200px;
     margin: 20px auto;
     padding: 20px;
+    overflow-x: hidden; 
 }
 
 /* Header with back button */
@@ -42,6 +43,7 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
+    width: 100%;
 }
 
 .chart-box {
@@ -51,6 +53,8 @@
     border-radius: 8px;
     display: flex;
     flex-direction: column;
+    width: 100%;
+    box-sizing: border-box; /* Include padding in width */
 }
 
 .chart-box h3 {
@@ -60,9 +64,10 @@
 }
 
 .chart-box canvas {
-    flex: 1;
-    min-height: 250px;
+    width: 100% !important;
+    height: auto !important;
     max-height: 300px;
+    aspect-ratio: 4/3; /* Maintain aspect ratio */
 }
 
 .chart-box.wide {
@@ -70,7 +75,7 @@
 }
 
 .chart-box.wide canvas {
-    min-height: 200px;
+    aspect-ratio: 16/9; /* Wider aspect ratio for full-width chart */
     max-height: 250px;
 }
 
@@ -101,6 +106,7 @@
 @media (max-width: 768px) {
     .dashboard {
         padding: 15px;
+        margin: 15px auto;
     }
 
     .header {
@@ -120,7 +126,15 @@
         grid-column: 1;
     }
 
+    .chart-box {
+        padding: 15px;
+    }
+
     .chart-box canvas {
-        min-height: 200px;
+        max-height: 250px;
+    }
+
+    .chart-box.wide canvas {
+        max-height: 200px;
     }
 }
