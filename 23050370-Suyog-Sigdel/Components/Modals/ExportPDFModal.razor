@@ -82,10 +82,6 @@
             }
             else
             {
-                <!--  <button class="open-btn" @onclick="OpenFolder">
-                    <i class="fas fa-folder-open"></i>
-                    Open Folder
-                </button> -->
                 <button class="done-btn" @onclick="Close">
                     Done
                 </button>
@@ -194,34 +190,4 @@
         }
     }
 
-    <!-- private async Task OpenFolder()
-    {
-        try
-        {
-            await Launcher.OpenAsync(new OpenFileRequest
-            {
-                File = new ReadOnlyFile(exportedFolderPath)
-            });
-        }
-        catch
-        {
-            // If opening folder fails, try opening the directory
-            try
-            {
-                var firstFile = Directory.GetFiles(exportedFolderPath).FirstOrDefault();
-                if (firstFile != null)
-                {
-                    await Launcher.OpenAsync(new OpenFileRequest
-                    {
-                        File = new ReadOnlyFile(firstFile)
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                errorMessage = $"Could not open folder: {ex.Message}";
-                StateHasChanged();
-            }
-        }
-    } -->
 }

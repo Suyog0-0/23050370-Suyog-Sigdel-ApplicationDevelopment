@@ -174,7 +174,7 @@
     opacity: 0.7 !important;
 }
 
-/* Ensure placeholder disappears in dark mode too */
+/* For placeholder text to disappear in dark mode  */
 :global(.dark .ql-editor:not(.ql-blank)::before) {
     display: none !important;
 }

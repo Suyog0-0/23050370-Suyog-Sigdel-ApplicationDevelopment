@@ -80,7 +80,7 @@ public static class MauiProgram
         using (var scope = app.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            db.Database.EnsureCreated(); // Creates SQLite DB if not exists
+            db.Database.EnsureCreated(); // Creates SQLite DB if does not currently exist
         }
 
         return app;

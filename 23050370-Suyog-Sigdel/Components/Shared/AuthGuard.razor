@@ -30,11 +30,11 @@ else if (isAuthenticated)
 
     private async Task CheckAuthentication()
     {
-        if (hasChecked) return; // Prevent re-checking
+        if (hasChecked) return; // For Prevent re-checking
         
         isChecking = true;
         
-        // Check if we're already on the login page
+        // Check if user is already in login page
         var currentUri = Navigation.Uri;
         if (currentUri.Contains("/login"))
         {

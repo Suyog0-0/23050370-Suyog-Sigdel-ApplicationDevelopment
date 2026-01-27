@@ -151,7 +151,7 @@ public class SecurityService
         OnAuthenticationChanged?.Invoke();
     }
     
-    // Clear cache (call this when needed)
+    // Clear cache 
     /*public void ClearCache()
     {
         _cachedSettings = null;

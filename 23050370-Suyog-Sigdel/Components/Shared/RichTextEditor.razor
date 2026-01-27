@@ -45,7 +45,7 @@
     {
         try
         {
-            await Task.Delay(150); // Wait for editor to be ready
+            await Task.Delay(150); // Small delay for for editor to be ready
             await JSRuntime.InvokeVoidAsync("setQuillHTML", editorId, html ?? "");
             await Task.Delay(50); // Allow history clear to complete
         }

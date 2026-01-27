@@ -132,10 +132,10 @@
         _show = true;
         StateHasChanged();
         
-        // Wait a bit for the modal to render
+        // Wait a bit for the modal to render info
         await Task.Delay(50);
         
-        // Load the content into the editor
+        // Load the content info into the editor
         if (richTextEditor != null)
         {
             await richTextEditor.LoadHTMLContent(entry.Content);

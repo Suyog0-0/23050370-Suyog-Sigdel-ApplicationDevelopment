@@ -27,7 +27,7 @@ public class ThemeService
         OnThemeChanged?.Invoke();
     }
 
-    // Set color theme (blue, soft-gray, dark-purple)
+    // Set color theme (blue, soft-gray or dark-purple)
     public void SetColorTheme(string colorTheme)
     {
         CurrentColorTheme = colorTheme.ToLower();

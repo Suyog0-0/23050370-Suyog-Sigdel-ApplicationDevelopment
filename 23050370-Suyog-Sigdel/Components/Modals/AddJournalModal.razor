@@ -120,7 +120,7 @@
 
     public async Task<bool> TryShow(Func<Task<bool>> checkExistingEntry)
     {
-        // Check if entry already exists for today
+        // Check if entry already exists for today, if YES, error message
         bool entryExists = await checkExistingEntry();
         
         if (entryExists)
@@ -179,11 +179,11 @@
 
         AddCurrentTag();
 
-        // Hide modal and notify parent (don't clear form yet - parent needs the data)
+        // Hide modal and notify the parent (don't clear form yet since the parent needs the data)
         _show = false;
         await OnClose.InvokeAsync(true);
         
-        // Clear form after a small delay to allow parent to retrieve data
+        // Clear form after a small delay to allow the parent to retrieve data
         await Task.Delay(100);
         await ClearForm();
     }
