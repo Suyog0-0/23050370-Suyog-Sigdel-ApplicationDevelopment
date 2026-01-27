@@ -78,6 +78,9 @@
     private AddJournalModal? addModal;
     private int? deleteEntryId;
     private string errorMessage = string.Empty;
+    private int? editingEntryId; 
+    
+
 
     // Pagination variables
     private int pageSize = 5;
@@ -185,38 +188,58 @@
         }
     }
 
+    
     private async Task ShowEditModal(_23050370_Suyog_Sigdel.Models.JournalEntryModel entry)
     {
+        editingEntryId = entry.Id;  // Store the ID being edited
         if (editModal != null)
         {
             await editModal.ShowAsync(entry);
         }
     }
 
+    
+    
+    
+    
+    
+    
     private async Task OnEditModalClose(bool saved)
-    {
-        if (saved && editModal != null)
         {
-            var entry = journals?.FirstOrDefault(j => j.Id == journals.FirstOrDefault()?.Id);
+            if (!saved || editModal == null || !editingEntryId.HasValue)
+                return;
             
-            if (entry != null)
-            {
-                var tags = editModal.GetSelectedTags();
-                await JournalService.UpdateEntryByIdAsync(
-                    entry.Id,
-                    entry.Title,
-                    entry.Content,
-                    tags,
-                    entry.PrimaryMood,
-                    entry.SecondaryMood1,
-                    entry.SecondaryMood2
-                );
-                
-                await LoadJournals();
-            }
-        }
-    }
 
+            var title = editModal.GetTitle();
+            var content = await editModal.GetContent();
+            var tags = editModal.GetSelectedTags();
+            var primaryMood = editModal.GetPrimaryMood();
+            var secondaryMood1 = editModal.GetSecondaryMood1();
+            var secondaryMood2 = editModal.GetSecondaryMood2();
+            
+
+            await JournalService.UpdateEntryByIdAsync(
+                editingEntryId.Value,
+                title,
+                content,
+                tags,
+                primaryMood,
+                secondaryMood1,
+                secondaryMood2
+            );
+
+            await LoadJournals();
+            editingEntryId = null;
+        }
+
+
+    
+    
+    
+    
+    
+    
+    
     private void ShowDeleteModal(int id)
     {
         deleteEntryId = id;

@@ -155,46 +155,51 @@
         await OnClose.InvokeAsync(false);
     }
 
+    
+    
+    
     private async Task SaveChanges()
-    {
-        errorMessage = string.Empty;
-
-        if (richTextEditor == null || currentEntry == null)
         {
-            errorMessage = "Editor not ready";
-            return;
+            errorMessage = string.Empty;
+
+            if (richTextEditor == null || currentEntry == null)
+            {
+                errorMessage = "Editor not ready";
+                return;
+            }
+
+            var htmlContent = await richTextEditor.GetHTML();
+
+            if (string.IsNullOrWhiteSpace(htmlContent) || htmlContent == "<br>" || htmlContent == "<div><br></div>")
+            {
+                errorMessage = "Please write something before saving.";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(primaryMood))
+            {
+                errorMessage = "Please select a primary mood.";
+                return;
+            }
+
+            AddCurrentTag();
+
+            // Update the entry model
+            currentEntry.Title = titleText;
+            currentEntry.Content = htmlContent;
+            currentEntry.PrimaryMood = primaryMood;
+            currentEntry.SecondaryMood1 = secondaryMood1;
+            currentEntry.SecondaryMood2 = secondaryMood2;
+
+            _show = false;
+            await OnClose.InvokeAsync(true);
         }
 
-        var htmlContent = await richTextEditor.GetHTML();
 
-        if (string.IsNullOrWhiteSpace(htmlContent) || htmlContent == "<br>" || htmlContent == "<div><br></div>")
-        {
-            errorMessage = "Please write something before saving.";
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(primaryMood))
-        {
-            errorMessage = "Please select a primary mood.";
-            return;
-        }
-
-        // Add any pending tag
-        AddCurrentTag();
-
-        // Update the entry model with new values
-        currentEntry.Title = titleText;
-        currentEntry.Content = htmlContent;
-        currentEntry.PrimaryMood = primaryMood;
-        currentEntry.SecondaryMood1 = secondaryMood1;
-        currentEntry.SecondaryMood2 = secondaryMood2;
-        // Tags will be handled by the parent component
-
-        await ClearForm();
-        _show = false;
-        await OnClose.InvokeAsync(true);
-    }
-
+    
+    
+    
+    
     private void HandleTagKeyPress(KeyboardEventArgs e)
     {
         if (e.Key == "Enter" || e.Key == ",")
@@ -240,4 +245,33 @@
     {
         return selectedTags;
     }
+    
+    public string GetTitle()
+    {
+        return titleText;
+    }
+
+    public async Task<string> GetContent()
+    {
+        if (richTextEditor == null)
+            return string.Empty;
+
+        return await richTextEditor.GetHTML();
+    }
+
+    public string GetPrimaryMood()
+    {
+        return primaryMood;
+    }
+
+    public string? GetSecondaryMood1()
+    {
+        return secondaryMood1;
+    }
+
+    public string? GetSecondaryMood2()
+    {
+        return secondaryMood2;
+    }
+
 }

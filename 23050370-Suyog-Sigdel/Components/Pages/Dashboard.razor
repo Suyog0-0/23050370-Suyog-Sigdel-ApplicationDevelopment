@@ -15,6 +15,10 @@
     {
         <p>Loading...</p>
     }
+    else if (!hasData)
+    {
+        <p style="text-align: center; padding: 2rem; color: #7f8c8d;">No journal entries yet. Start writing to see your statistics!</p>
+    }
     else
     {
         <div class="charts">
@@ -48,6 +52,7 @@
 
 @code {
     private bool isLoading = true;
+    private bool hasData = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -64,12 +69,15 @@
         if (!entries.Any())
         {
             isLoading = false;
+            hasData = false;
             StateHasChanged();
             return;
         }
 
-        // Get primary moods
-        var moods = entries
+        hasData = true;
+
+        // Primary moods
+        var moodData = entries
             .Where(e => !string.IsNullOrEmpty(e.PrimaryMood))
             .GroupBy(e => e.PrimaryMood)
             .Select(g => new { g.Key, Count = g.Count() })
@@ -77,11 +85,11 @@
             .Take(5)
             .ToList();
 
-        var moodLabels = moods.Select(x => x.Key).ToArray();
-        var moodData = moods.Select(x => x.Count).ToArray();
+        var moodLabels = moodData.Any() ? moodData.Select(x => x.Key).ToArray() : new[] { "No data" };
+        var moodCounts = moodData.Any() ? moodData.Select(x => x.Count).ToArray() : new[] { 0 };
 
-        // Get top tags
-        var tags = entries
+        // Top tags
+        var tagData = entries
             .SelectMany(e => e.Tags)
             .GroupBy(t => t.Name)
             .Select(g => new { g.Key, Count = g.Count() })
@@ -89,10 +97,10 @@
             .Take(5)
             .ToList();
 
-        var tagLabels = tags.Select(x => x.Key).ToArray();
-        var tagData = tags.Select(x => x.Count).ToArray();
+        var tagLabels = tagData.Any() ? tagData.Select(x => x.Key).ToArray() : new[] { "No tags" };
+        var tagCounts = tagData.Any() ? tagData.Select(x => x.Count).ToArray() : new[] { 0 };
 
-        // Get all moods (including secondary)
+        // All moods
         var allMoods = new List<string>();
         foreach (var entry in entries)
         {
@@ -101,18 +109,18 @@
             if (!string.IsNullOrEmpty(entry.SecondaryMood2)) allMoods.Add(entry.SecondaryMood2);
         }
 
-        var frequentMoods = allMoods
+        var freqData = allMoods
             .GroupBy(m => m)
             .Select(g => new { g.Key, Count = g.Count() })
             .OrderByDescending(x => x.Count)
             .Take(7)
             .ToList();
 
-        var frequentLabels = frequentMoods.Select(x => x.Key).ToArray();
-        var frequentData = frequentMoods.Select(x => x.Count).ToArray();
+        var freqLabels = freqData.Any() ? freqData.Select(x => x.Key).ToArray() : new[] { "No data" };
+        var freqCounts = freqData.Any() ? freqData.Select(x => x.Count).ToArray() : new[] { 0 };
 
-        // Get all tags for pie chart
-        var allTags = entries
+        // Tag distribution (pie)
+        var pieData = entries
             .SelectMany(e => e.Tags)
             .GroupBy(t => t.Name)
             .Select(g => new { g.Key, Count = g.Count() })
@@ -120,27 +128,27 @@
             .Take(8)
             .ToList();
 
-        var pieLabels = allTags.Select(x => x.Key).ToArray();
-        var pieData = allTags.Select(x => x.Count).ToArray();
+        var pieLabels = pieData.Any() ? pieData.Select(x => x.Key).ToArray() : new[] { "No tags" };
+        var pieCounts = pieData.Any() ? pieData.Select(x => x.Count).ToArray() : new[] { 0 };
 
-        // Get word counts
+        // Word counts
         var last7 = entries
             .Where(e => e.EntryDay >= DateOnly.FromDateTime(DateTime.Now.AddDays(-7)))
             .OrderBy(e => e.EntryDay)
             .ToList();
 
-        var dates = last7.Select(e => e.EntryDay.ToString("MM/dd")).ToArray();
-        var words = last7.Select(e => CountWords(e.Content)).ToArray();
+        var dates = last7.Any() ? last7.Select(e => e.EntryDay.ToString("MM/dd")).ToArray() : new[] { "No data" };
+        var words = last7.Any() ? last7.Select(e => CountWords(e.Content)).ToArray() : new[] { 0 };
 
         isLoading = false;
         StateHasChanged();
-        await Task.Delay(100);
+        // await Task.Delay(50);
 
         await JS.InvokeVoidAsync("createCharts", 
-            moodLabels, moodData, 
-            tagLabels, tagData, 
-            frequentLabels, frequentData,
-            pieLabels, pieData,
+            moodLabels, moodCounts, 
+            tagLabels, tagCounts, 
+            freqLabels, freqCounts,
+            pieLabels, pieCounts,
             dates, words);
     }
 
