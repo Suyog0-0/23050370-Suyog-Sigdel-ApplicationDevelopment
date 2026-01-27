@@ -1,5 +1,6 @@
 using _23050370_Suyog_Sigdel.Data;
 using _23050370_Suyog_Sigdel.Models;
+using _23050370_Suyog_Sigdel.Helpers;
 using Microsoft.EntityFrameworkCore;
 
 namespace _23050370_Suyog_Sigdel.Services;
@@ -38,7 +39,7 @@ public partial class JournalService
             {
                 foreach (var tagName in tagNames)
                 {
-                    var tag = await GetOrCreateTag(tagName);
+                    var tag = await TagHelper.GetOrCreateTagAsync(_db, tagName);
                     existing.Tags.Add(tag);
                 }
             }

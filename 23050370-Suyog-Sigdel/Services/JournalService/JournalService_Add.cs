@@ -1,5 +1,6 @@
 using _23050370_Suyog_Sigdel.Data;
 using _23050370_Suyog_Sigdel.Models;
+using _23050370_Suyog_Sigdel.Helpers;
 using Microsoft.EntityFrameworkCore;
 
 namespace _23050370_Suyog_Sigdel.Services;
@@ -10,7 +11,7 @@ public partial class JournalService
     // ADD NEW ENTRY (IF NOT EXIST) WITH TAGS AND MOODS
     // ──────────────────────────────────────────────
     public async Task AddEntryAsync(string title, string content, List<string> tagNames, 
-                                   string primaryMood, string? secondaryMood1 = null, string? secondaryMood2 = null)
+        string primaryMood, string? secondaryMood1 = null, string? secondaryMood2 = null)
     {
         try
         {
@@ -38,7 +39,7 @@ public partial class JournalService
             {
                 foreach (var tagName in tagNames)
                 {
-                    var tag = await GetOrCreateTag(tagName);
+                    var tag = await TagHelper.GetOrCreateTagAsync(_db, tagName);
                     entry.Tags.Add(tag);
                 }
             }
@@ -50,20 +51,5 @@ public partial class JournalService
         {
             Console.WriteLine("DB Insert Error: " + ex.Message);
         }
-    }
-
-    // Helper method to get or create tag
-    private async Task<TagModel> GetOrCreateTag(string tagName)
-    {
-        tagName = tagName.Trim().ToLower();
-        var tag = await _db.Tags.FirstOrDefaultAsync(t => t.Name == tagName);
-        
-        if (tag == null)
-        {
-            tag = new TagModel { Name = tagName };
-            await _db.Tags.AddAsync(tag);
-        }
-        
-        return tag;
     }
 }

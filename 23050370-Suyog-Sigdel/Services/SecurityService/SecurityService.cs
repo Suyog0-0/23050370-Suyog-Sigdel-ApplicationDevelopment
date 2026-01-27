@@ -7,8 +7,6 @@ namespace _23050370_Suyog_Sigdel.Services;
 public class SecurityService
 {
     private readonly AppDbContext _db;
-    private SecurityModel? _cachedSettings;
-    private bool _hasCachedSettings = false;
     
     public bool IsAuthenticated { get; private set; } = false;
     public event Action? OnAuthenticationChanged;
@@ -18,30 +16,19 @@ public class SecurityService
         _db = db;
     }
 
-    // Get security settings with caching
-    public async Task<SecurityModel?> GetSecuritySettingsAsync()
+    // Check if PIN is enabled
+    public async Task<bool> IsPinEnabledAsync()
     {
         try
         {
-            if (!_hasCachedSettings)
-            {
-                _cachedSettings = await _db.SecuritySettings.FirstOrDefaultAsync();
-                _hasCachedSettings = true;
-            }
-            return _cachedSettings;
+            var settings = await _db.SecuritySettings.FirstOrDefaultAsync();
+            return settings?.IsEnabled ?? false;
         }
         catch (Exception ex)
         {
             Console.WriteLine("Security Get Error: " + ex.Message);
-            return null;
+            return false;
         }
-    }
-
-    // Check if PIN is enabled (with caching)
-    public async Task<bool> IsPinEnabledAsync()
-    {
-        var settings = await GetSecuritySettingsAsync();
-        return settings?.IsEnabled ?? false;
     }
 
     // Set or update PIN
@@ -70,11 +57,6 @@ public class SecurityService
             }
 
             await _db.SaveChangesAsync();
-            
-            // Update cache
-            _cachedSettings = settings;
-            _hasCachedSettings = true;
-            
             return true;
         }
         catch (Exception ex)
@@ -89,7 +71,7 @@ public class SecurityService
     {
         try
         {
-            var settings = await GetSecuritySettingsAsync();
+            var settings = await _db.SecuritySettings.FirstOrDefaultAsync();
             
             if (settings == null || !settings.IsEnabled)
             {
@@ -127,10 +109,6 @@ public class SecurityService
                 settings.IsEnabled = false;
                 _db.SecuritySettings.Update(settings);
                 await _db.SaveChangesAsync();
-                
-                // Update cache
-                _cachedSettings = settings;
-                _hasCachedSettings = true;
             }
 
             IsAuthenticated = true;
@@ -150,11 +128,4 @@ public class SecurityService
         IsAuthenticated = false;
         OnAuthenticationChanged?.Invoke();
     }
-    
-    // Clear cache 
-    /*public void ClearCache()
-    {
-        _cachedSettings = null;
-        _hasCachedSettings = false;
-    }*/
 }
