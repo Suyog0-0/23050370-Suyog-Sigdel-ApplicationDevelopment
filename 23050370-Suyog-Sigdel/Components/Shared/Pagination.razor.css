@@ -24,6 +24,29 @@
     justify-content: center;
 }
 
+/* Greyed-out page numbers for non-existent pages */
+.page-btn.disabled-number {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+    background: #f5f5f5;
+    border-color: #e0e0e0;
+    color: #999;
+}
+
+/* Dark theme support for disabled numbers */
+.dark .page-btn.disabled-number {
+    background: #2a2a2a;
+    border-color: #404040;
+    color: #666;
+}
+
+/* Ensure disabled state is consistent */
+.page-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
 .page-btn:hover:not(:disabled) {
     background: #f0f2f5;
     border-color: var(--primary-color, #3498db);

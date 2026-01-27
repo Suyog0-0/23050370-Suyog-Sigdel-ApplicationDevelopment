@@ -60,7 +60,7 @@
     private async Task LoadJournals()
     {
         var allJournals = await JournalService.GetEntriesAsync();
-        recentJournals = allJournals.Take(5).ToList();
+        recentJournals = allJournals.Take(3).ToList();
         
         // Refresh streak stats after loading journals (with null check)
         if (streakStats != null)
