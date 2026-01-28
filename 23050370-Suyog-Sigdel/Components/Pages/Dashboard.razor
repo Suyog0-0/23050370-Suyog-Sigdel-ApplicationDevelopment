@@ -11,13 +11,25 @@
         <h1>Dashboard</h1>
     </div>
     
+    <!-- Date Filter -->
+    <div class="date-filter">
+        <label>Filter by Date Range:</label>
+        <div class="date-inputs">
+            <input type="date" @bind="startDate" @bind:event="oninput" max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+            <span>to</span>
+            <input type="date" @bind="endDate" @bind:event="oninput" max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+        </div>
+        <button class="apply-btn" @onclick="ApplyFilter">Apply</button>
+        <button class="reset-btn" @onclick="ResetFilter">Reset</button>
+    </div>
+    
     @if (isLoading)
     {
         <p>Loading...</p>
     }
     else if (!hasData)
     {
-        <p style="text-align: center; padding: 2rem; color: #7f8c8d;">No journal entries yet. Start writing to see your statistics!</p>
+        <p style="text-align: center; padding: 2rem; color: #7f8c8d;">No journal entries found for the selected date range.</p>
     }
     else
     {
@@ -43,7 +55,7 @@
             </div>
 
             <div class="chart-box wide">
-                <h3>Word Count (Last 7 Days)</h3>
+                <h3>Word Count</h3>
                 <canvas id="wordCountChart"></canvas>
             </div>
         </div>
@@ -53,6 +65,8 @@
 @code {
     private bool isLoading = true;
     private bool hasData = false;
+    private DateTime startDate = DateTime.Today.AddMonths(-1);
+    private DateTime endDate = DateTime.Today;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -62,9 +76,34 @@
         }
     }
 
+    private async Task ApplyFilter()
+    {
+        if (startDate > endDate)
+        {
+            return; // Invalid range
+        }
+        await LoadData();
+    }
+
+    private async Task ResetFilter()
+    {
+        startDate = DateTime.Today.AddMonths(-1);
+        endDate = DateTime.Today;
+        await LoadData();
+    }
+
     private async Task LoadData()
     {
-        var entries = await JournalService.GetEntriesAsync();
+        isLoading = true;
+        StateHasChanged();
+
+        var allEntries = await JournalService.GetEntriesAsync();
+        
+        // Filter entries by date range
+        var entries = allEntries
+            .Where(e => e.EntryDay >= DateOnly.FromDateTime(startDate) && 
+                       e.EntryDay <= DateOnly.FromDateTime(endDate))
+            .ToList();
         
         if (!entries.Any())
         {
@@ -131,18 +170,14 @@
         var pieLabels = pieData.Any() ? pieData.Select(x => x.Key).ToArray() : new[] { "No tags" };
         var pieCounts = pieData.Any() ? pieData.Select(x => x.Count).ToArray() : new[] { 0 };
 
-        // Word counts
-        var last7 = entries
-            .Where(e => e.EntryDay >= DateOnly.FromDateTime(DateTime.Now.AddDays(-7)))
-            .OrderBy(e => e.EntryDay)
-            .ToList();
+        // Word counts (within date range)
+        var filteredEntries = entries.OrderBy(e => e.EntryDay).ToList();
 
-        var dates = last7.Any() ? last7.Select(e => e.EntryDay.ToString("MM/dd")).ToArray() : new[] { "No data" };
-        var words = last7.Any() ? last7.Select(e => CountWords(e.Content)).ToArray() : new[] { 0 };
+        var dates = filteredEntries.Any() ? filteredEntries.Select(e => e.EntryDay.ToString("MM/dd")).ToArray() : new[] { "No data" };
+        var words = filteredEntries.Any() ? filteredEntries.Select(e => CountWords(e.Content)).ToArray() : new[] { 0 };
 
         isLoading = false;
         StateHasChanged();
-        // await Task.Delay(50);
 
         await JS.InvokeVoidAsync("createCharts", 
             moodLabels, moodCounts, 

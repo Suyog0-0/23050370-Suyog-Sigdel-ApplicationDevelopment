@@ -2,7 +2,7 @@
     max-width: 1200px;
     margin: 20px auto;
     padding: 20px;
-    overflow-x: hidden; 
+    overflow-x: hidden;
 }
 
 /* Header with back button */
@@ -10,7 +10,7 @@
     display: flex;
     align-items: center;
     gap: 15px;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .back-btn {
@@ -38,6 +38,78 @@
     flex: 1;
 }
 
+/* Date Filter Section */
+.date-filter {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 1.2rem;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.date-filter label {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 0.95rem;
+}
+
+.date-inputs {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.date-inputs input[type="date"] {
+    padding: 0.5rem 0.8rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.date-inputs input[type="date"]:focus {
+    outline: none;
+    border-color: var(--primary-color, #3498db);
+}
+
+.date-inputs span {
+    color: #7f8c8d;
+    font-weight: 500;
+}
+
+.apply-btn,
+.reset-btn {
+    padding: 0.5rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.apply-btn {
+    background: var(--primary-color, #3498db);
+    color: white;
+}
+
+.apply-btn:hover {
+    background: var(--primary-hover, #2980b9);
+    transform: translateY(-1px);
+}
+
+.reset-btn {
+    background: #95a5a6;
+    color: white;
+}
+
+.reset-btn:hover {
+    background: #7f8c8d;
+}
+
 /* Charts grid */
 .charts {
     display: grid;
@@ -54,7 +126,7 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    box-sizing: border-box; /* Include padding in width */
+    box-sizing: border-box;
 }
 
 .chart-box h3 {
@@ -67,7 +139,7 @@
     width: 100% !important;
     height: auto !important;
     max-height: 300px;
-    aspect-ratio: 4/3; /* Maintain aspect ratio */
+    aspect-ratio: 4/3;
 }
 
 .chart-box.wide {
@@ -75,7 +147,7 @@
 }
 
 .chart-box.wide canvas {
-    aspect-ratio: 16/9; /* Wider aspect ratio for full-width chart */
+    aspect-ratio: 16/9;
     max-height: 250px;
 }
 
@@ -87,6 +159,25 @@
 
 .dark .back-btn:hover {
     background: #333;
+}
+
+.dark .date-filter {
+    background: #2a2a2a;
+    border-color: #444;
+}
+
+.dark .date-filter label {
+    color: #e0e0e0;
+}
+
+.dark .date-inputs input[type="date"] {
+    background: #1a1a1a;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+.dark .date-inputs span {
+    color: #adb5bd;
 }
 
 .dark .chart-box {
@@ -110,11 +201,40 @@
     }
 
     .header {
-        margin-bottom: 20px;
+        margin-bottom: 15px;
     }
 
     .dashboard h1 {
         font-size: 24px;
+    }
+
+    .date-filter {
+        padding: 1rem;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .date-filter label {
+        width: 100%;
+    }
+
+    .date-inputs {
+        width: 100%;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .date-inputs input[type="date"] {
+        width: 100%;
+    }
+
+    .date-inputs span {
+        display: none;
+    }
+
+    .apply-btn,
+    .reset-btn {
+        width: 100%;
     }
 
     .charts {
